@@ -2,6 +2,30 @@ const jwt = require('jwt-simple');
 const secret = process.env.JWT_SECRET || 'test_secret';
 
 module.exports = {
+  Order: {
+    user: (order, args, { User }) => {
+      return User.findById(order.userId);
+    },
+    lineItems: async (order, args, { Order, LineItem }) => {
+      return LineItem.findAll({ where: { orderId: order.id } });
+    },
+  },
+  LineItem: {
+    product: (lineItem, args, { Product }) => {
+      return Product.findById(lineItem.productId);
+    },
+    order: (lineItem, args, { Order }) => {
+      return Order.findById(lineItem.orderId);
+    },
+  },
+  User: {
+    orders: (user, args, { Order }) => {
+      return Order.findAll({ where: { userId: user.id } });
+    },
+    lineItems: (user, args, { LineItem }) => {
+      return LineItem.findAll({ where: { userId: user.id } });
+    },
+  },
   Query: {
     orders: async (_, args, { Order, LineItem, User }) => {
       await Order.findOrCreate({ where: { status: 'CART' } });

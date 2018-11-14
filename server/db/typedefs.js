@@ -18,7 +18,9 @@ type Order {
   id: String!
   lineItems: [LineItem]
   status: String!
-  userId: User
+  userId: Int
+  user: User
+
 }
 
 type User {
@@ -26,6 +28,7 @@ type User {
   name: String
   password: String
   orders: [Order]
+  lineItems: [LineItem]
 }
 
 type Query {
