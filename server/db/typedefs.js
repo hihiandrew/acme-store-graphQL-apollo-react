@@ -40,6 +40,8 @@ type Query {
   lineItem(id:Int!): LineItem
   users: [User]
   user(id:String!):User
+  ordersCount: Int
+  cartItemsCount: Int
 }
 
 type AuthPayload {

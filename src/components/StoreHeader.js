@@ -1,40 +1,69 @@
-import React, { Component } from 'react'
-import { connect } from 'react-redux'
-import { resetAll } from '../store';
+import React, { Component } from 'react';
+import { Query, Mutation } from 'react-apollo';
+import gql from 'graphql-tag';
+import { AUTH_TOKEN } from '../index';
 
+const LINEITEMS_QUERY = gql`
+  query {
+    orders {
+      status
+      lineItems {
+        quantity
+      }
+    }
+  }
+`;
+
+const RESET_MUTATION = gql`
+  mutation {
+    reset
+  }
+`;
 
 class StoreHeader extends Component {
-    render() {
-        const completeOrders = this.props.orders.filter(o => o.status == 'ORDER');
-        const totalQuantity = completeOrders.reduce((init, ord) => {
-            const orderQuantity = ord.lineitems.reduce((init2, item) => {
-                return init2 + item.quantity;
-            }, 0);
-            return init + orderQuantity;
-        }, 0);
-        return (
-            <div className="container">
-            <p className="alert alert-success">{totalQuantity} items sold!</p>
-            <button onClick={this.resetAll} className="btn btn-warning">
+  render() {
+    return (
+      <div className="container">
+        <p className="alert alert-success">
+          <Query query={LINEITEMS_QUERY}>
+            {({ loading, error, data }) => {
+              if (loading) return 'Loading..';
+              if (error) return 'Error';
+              const ordered = data.orders.filter(o => o.status == 'ORDER');
+              const soldItems = ordered.reduce(
+                (init, curr) =>
+                  init +
+                  curr.lineItems.reduce(
+                    (init, curr) => init + curr.quantity,
+                    0
+                  ),
+                0
+              );
+              return soldItems;
+            }}
+          </Query>{' '}
+          items sold!
+        </p>
+        <Mutation
+          mutation={RESET_MUTATION}
+          update={store => {
+            const data = store.readQuery({ query: LINEITEMS_QUERY });
+            data.orders = [];
+            store.writeQuery({
+              query: LINEITEMS_QUERY,
+              data,
+            });
+          }}
+        >
+          {mutation => (
+            <button onClick={mutation} className="btn btn-warning">
               Reset
             </button>
-          </div>)
-    }
+          )}
+        </Mutation>
+      </div>
+    );
+  }
 }
 
-const mapStateToProps = state => {
-    return {
-        orders: state.orders,
-    };
-};
-
-const mapDispatchToProps = dispatch => {
-    return {
-        resetAll: () => dispatch(resetAll()),
-    };
-};
-
-export default connect(
-    mapStateToProps,
-    mapDispatchToProps
-)(StoreHeader);
+export default StoreHeader;

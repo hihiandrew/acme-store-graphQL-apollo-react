@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "apollo-boost": "^0.1.20",
+    "apollo-link-context": "^1.0.9",
     "apollo-server-express": "^2.2.2",
     "axios": "^0.18.0",
     "express": "^4.16.3",
@@ -28,6 +29,7 @@
     "pg": "^7.4.3",
     "postgraphile": "^4.0.1",
     "react": "^16.5.2",
+    "react-apollo": "^2.2.4",
     "react-dom": "^16.4.2",
     "react-redux": "^5.0.7",
     "react-router": "^4.3.1",

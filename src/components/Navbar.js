@@ -1,21 +1,24 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
-import { connect } from 'react-redux';
+import { Query } from 'react-apollo';
+import gql from 'graphql-tag';
+import { AUTH_TOKEN } from '../index';
 
-//test chg
+const ORDERS_COUNT_QUERY = gql`
+  query {
+    ordersCount
+  }
+`;
+const CARTITEMS_COUNT_QUERY = gql`
+  query {
+    cartItemsCount
+  }
+`;
 
 class Navbar extends Component {
   render() {
-    const { orders, path, auth } = this.props;
-    let cart, itemsInCart, totalOrders;
-    if (orders.length) {
-      cart = orders.find(o => o.status == 'CART');
-      itemsInCart = cart.lineitems.reduce(
-        (init, curr) => init + curr.quantity,
-        0
-      );
-      totalOrders = orders.filter(o => o.status == 'ORDER').length;
-    }
+    const { path } = this.props;
+    const auth = localStorage.getItem(AUTH_TOKEN) || {};
 
     return (
       <nav className="navbar navbar-expand-md navbar-light bg-light">
@@ -43,17 +46,33 @@ class Navbar extends Component {
             </li>
             <li className={path == 'cart' ? 'nav-item active' : 'nav-item'}>
               <Link to="/cart" className="nav-link">
-                Cart ({itemsInCart})
+                Cart (
+                <Query query={CARTITEMS_COUNT_QUERY}>
+                  {({ loading, error, data }) => {
+                    if (loading) return <div>Loading..</div>;
+                    if (error) return <div>Error</div>;
+                    return data.cartItemsCount;
+                  }}
+                </Query>
+                )
               </Link>
             </li>
             <li className={path == 'orders' ? 'nav-item active' : 'nav-item'}>
               <Link to="/orders" className="nav-link">
-                Orders ({totalOrders})
+                Orders (
+                <Query query={ORDERS_COUNT_QUERY}>
+                  {({ loading, error, data }) => {
+                    if (loading) return <div>Loading..</div>;
+                    if (error) return <div>Error</div>;
+                    return data.ordersCount;
+                  }}
+                </Query>
+                )
               </Link>
             </li>
             <li>
-              <Link to={auth.id ? '/logout' : '/login'} className="nav-link">
-                {auth.id ? `Logout (${auth.name})` : 'Login'}
+              <Link to={auth ? '/logout' : '/login'} className="nav-link">
+                {auth ? `Logout (${auth})` : 'Login'}
               </Link>
             </li>
           </ul>
@@ -63,14 +82,4 @@ class Navbar extends Component {
   }
 }
 
-const mapStateToProps = state => {
-  return {
-    orders: state.orders,
-    auth: state.auth,
-  };
-};
-
-export default connect(
-  mapStateToProps,
-  null
-)(Navbar);
+export default Navbar;

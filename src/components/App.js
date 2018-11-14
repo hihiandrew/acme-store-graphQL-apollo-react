@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { HashRouter, Route } from 'react-router-dom';
-import { connect } from 'react-redux';
+import { AUTH_TOKEN } from '../index';
 import Navbar from './Navbar';
 import Home from './Home';
 import Cart from './Cart';
@@ -13,30 +13,11 @@ import {
   resetAll,
   exchangeTokenForAuth,
   logout,
-}
-from '../store';
-
-//test chg
+} from '../store';
 
 class App extends Component {
-  constructor() {
-    super();
-    this.resetAll = this.resetAll.bind(this);
-  }
-
-  async componentDidMount() {
-    await this.props.getProducts();
-    await this.props.getOrders();
-    await this.props.exchangeTokenForAuth();
-  }
-
-  resetAll() {
-    this.props.resetAll();
-  }
-
   render() {
-    const { logout, auth } = this.props;
-
+    const auth = localStorage.getItem(AUTH_TOKEN);
     const renderNavbar = ({ location }) => {
       const path = location.pathname.split('/').pop();
       return <Navbar path={path} />;
@@ -57,7 +38,7 @@ class App extends Component {
       <HashRouter>
         <div>
           <Route path="/" render={renderNavbar} />
-          {auth.id ? (
+          {auth ? (
             <div>
               <Route path="/" component={StoreHeader} />
               <Route exact path="/" component={Home} />
@@ -78,25 +59,4 @@ class App extends Component {
   }
 }
 
-const mapStateToProps = state => {
-  return {
-    orders: state.orders,
-    products: state.products,
-    auth: state.auth,
-  };
-};
-
-const mapDispatchToProps = dispatch => {
-  return {
-    getOrders: () => dispatch(getOrders()),
-    getProducts: () => dispatch(getProducts()),
-    resetAll: () => dispatch(resetAll()),
-    exchangeTokenForAuth: history => dispatch(exchangeTokenForAuth(history)),
-    logout: () => dispatch(logout()),
-  };
-};
-
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(App);
+export default App;

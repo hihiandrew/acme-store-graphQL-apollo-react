@@ -3,7 +3,7 @@ const secret = process.env.JWT_SECRET || 'test_secret';
 
 module.exports = {
   Order: {
-    user: (order, args, { User }) => {
+    user: async (order, args, { User }) => {
       return User.findById(order.userId);
     },
     lineItems: async (order, args, { Order, LineItem }) => {
@@ -33,7 +33,17 @@ module.exports = {
         include: [{ model: LineItem }, User],
       });
     },
-
+    ordersCount: async (_, args, { Order }) => {
+      ords = await Order.findAll();
+      return ords.length;
+    },
+    cartItemsCount: async (_, args, { Order, LineItem }) => {
+      const cart = Order.findOne({ where: { status: 'CART' } });
+      const cartItems = await LineItem.findAll({ where: { orderId: cart.id } });
+      return cartItems.reduce((init, curr) => {
+        return init + curr.quantity;
+      }, 0);
+    },
     order: async (_, { id }, { Order }) => await Order.findById(id),
 
     products: async (_, args, { Product }) => await Product.findAll(),

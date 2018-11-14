@@ -3,7 +3,6 @@ const app = express();
 const { ApolloServer, gql } = require('apollo-server-express');
 const typeDefs = require('./db/typeDefs');
 const resolvers = require('./db/resolvers');
-
 const morgan = require('morgan');
 const bodyParser = require('body-parser');
 const path = require('path');
