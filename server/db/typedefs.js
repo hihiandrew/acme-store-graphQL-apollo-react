@@ -1,34 +1,30 @@
 module.exports = `
 type Product {
-  id: ID!
+  id: Int!
   name: String!
+  lineItems: [LineItem]
 }
 
 type LineItem {
-  id: ID!
-  quantity: Int!
-  productId: ID
+  id: Int!
+  quantity: Int
+  productId: Int
   product: Product
-  orderId: ID
+  orderId: String
   order: Order
 }
 
-enum Status {
-  CART
-  ORDER
-}
-
 type Order {
-  id: ID!
-  lineItems: [LineItem]!
-  status: Status!
-  user: User
+  id: String!
+  lineItems: [LineItem]
+  status: String!
+  userId: User
 }
 
 type User {
-  id: String!
-  name: String!
-  password: String!
+  id: String
+  name: String
+  password: String
   orders: [Order]
 }
 
@@ -36,20 +32,11 @@ type Query {
   orders: [Order!]!
   order(id:String!): Order
   products: [Product!]!
-  product(id:ID!): Product
+  product(id:Int!): Product
   lineItems: [LineItem!]!
-  lineItem(id:ID!): LineItem
-}
-
-input OrderInput {
-  lineItems: [LineItemInput]
-  status: Status
-}
-
-input LineItemInput {
-  quantity: Int = 1
-  productId: ID
-  orderID: ID
+  lineItem(id:Int!): LineItem
+  users: [User]
+  user(id:String!):User
 }
 
 type AuthPayload {
@@ -58,18 +45,16 @@ type AuthPayload {
 }
 
 type Mutation {
-  createOrder(id: String, input: OrderInput): Order!
-  updateOrder(id: String!, input: OrderInput): Order!
+  updateOrder(id: String!, status: String): Order!
   deleteOrder(id: String): Int
 
   reset(id: String):Int
 
-  createLineItem(id: ID, input: LineItemInput): LineItem!
-  updateLineItem(id: ID, input: LineItemInput): LineItem!
-  deleteLineItem(id: ID): Int
+  createLineItem(id: Int, quantity: Int, productId: Int, orderId: String): LineItem!
+  updateLineItem(id: Int, quantity: Int, productId: Int, orderId: String): LineItem!
+  deleteLineItem(id: Int): Int
 
-  createUser(id:ID, name:String!, password: String!): AuthPayload
-  updateUser(id:ID, name:String, password: String): AuthPayload
-  deleteUser(id:ID): Int
+  signup(name:String!, password: String!): AuthPayload
+  login(name: String!, password:String!): AuthPayload
 }
 `;

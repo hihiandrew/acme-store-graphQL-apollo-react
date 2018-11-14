@@ -1,104 +1,76 @@
-module.exports = {
-  Order: {
-    user: (parent, args, context) => parent.getUser(),
-  },
+const jwt = require('jwt-simple');
+const secret = process.env.JWT_SECRET || 'test_secret';
 
+module.exports = {
   Query: {
-    orders: async (parent, args, { Order }) => {
+    orders: async (_, args, { Order, LineItem, User }) => {
       await Order.findOrCreate({ where: { status: 'CART' } });
       return Order.findAll({
         include: [{ model: LineItem }, User],
       });
     },
 
-    order: async (parent, { id }, { Order }) => await Order.findById(id),
+    order: async (_, { id }, { Order }) => await Order.findById(id),
 
-    products: async (parent, args, { Product }) => await Product.findAll(),
+    products: async (_, args, { Product }) => await Product.findAll(),
 
-    product: async (parent, { id }, { Product }) => await Product.findById(id),
+    product: async (_, { id }, { Product }) => await Product.findById(id),
+
+    lineItems: async (_, args, { LineItem }) => await LineItem.findAll(),
+
+    users: async (_, args, { User }) => await User.findAll(),
   },
 
   Mutation: {
-    createOrder: async (parent, args, { Order }) => await Order.create(args),
+    updateOrder: async (_, { id, status }, { Order }) => {
+      const _order = await Order.findOne({ where: { id } });
+      await _order.update({ status: status });
+      return _order;
+    },
 
-    updateOrder: async (parent, args, { Order }) =>
-      await Order.update(args, { where: { id: args.id } }),
-
-    deleteOrder: async (parent, { id }, { Order }) =>
+    deleteOrder: async (_, { id }, { Order }) =>
       await Order.destroy({ where: { id } }),
 
-    reset: async () => {
+    reset: async (_, args, { Order, LineItem }) => {
       await Order.destroy({ where: {} });
       await LineItem.destroy({ where: {} });
       return;
     },
 
     createLineItem: async (
-      parent,
+      _,
       { orderId, quantity, productId },
       { LineItem }
-    ) => await LineItem.create(orderId, quantity, productId),
-
-    updateLineItem: async (parent, { id, quantity }, { LineItem }) => {
-      const _LineItem = await LineItem.findById(id);
-      return await _LineItem.update(quantity);
+    ) => {
+      return LineItem.create({ orderId, quantity, productId });
     },
 
-    deleteLineItem: async (parent, { id }, { LineItem }) =>
+    updateLineItem: async (_, { id, quantity }, { LineItem }) => {
+      const _LineItem = await LineItem.findById(id);
+      await _LineItem.update({ quantity });
+      return _LineItem;
+    },
+
+    deleteLineItem: async (_, { id }, { LineItem }) =>
       await LineItem.destroy({ where: { id } }),
 
-    createUser: async (parent, { name, password }, { User }) => {
-      const user = await User.findOne({ where: { name, password } });
-      if (!user) await User.create(orderId, quantity, productId);
-    },
+    signup: async (_, { name, password }, { User }) => {
+      const user = await User.create({ name, password });
 
-    updateUser: async (parent, { id, quantity }, { User }) => {
-      const _LineItem = await LineItem.findById(id);
-      return await _LineItem.update(quantity);
+      const token = jwt.encode({ id: user.id }, secret);
+      return { token, user };
     },
-
-    deleteUser: async (parent, { id }, { User }) =>
-      await User.destroy({ where: { id } }),
+    login: async (_, { name, password }, { User }) => {
+      const user = await User.findOne({ where: { name } });
+      if (!user) {
+        throw new Error('No such user found');
+      }
+      const valid = await User.findOne({ where: { password } });
+      if (!valid) {
+        throw new Error('Invalid password');
+      }
+      const token = jwt.encode({ id: user.id }, secret);
+      return { token, user };
+    },
   },
 };
-
-// export default {
-//   Author: {
-//     posts: (parent, args, context, info) => parent.getPosts(),
-//   },
-//   Post: {
-//     author: (parent, args, context, info) => parent.getAuthor(),
-//   },
-//   Query: {
-//     posts: (parent, args, { db }, info) => db.post.findAll(),
-//     authors: (parent, args, { db }, info) => db.author.findAll(),
-//     post: (parent, { id }, { db }, info) => db.post.findById(id),
-//     author: (parent, { id }, { db }, info) => db.author.findById(id),
-//   },
-//   Mutation: {
-//     createPost: (parent, { title, content, authorId }, { db }, info) =>
-//       db.post.create({
-//         title: title,
-//         content: content,
-//         authorId: authorId,
-//       }),
-//     updatePost: (parent, { title, content, id }, { db }, info) =>
-//       db.post.update(
-//         {
-//           title: title,
-//           content: content,
-//         },
-//         {
-//           where: {
-//             id: id,
-//           },
-//         }
-//       ),
-//     deletePost: (parent, { id }, { db }, info) =>
-//       db.post.destroy({
-//         where: {
-//           id: id,
-//         },
-//       }),
-//   },
-// };
