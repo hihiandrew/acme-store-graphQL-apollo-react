@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import { connect } from 'react-redux';
 import OrderTables from './OrderTables';
 
 class Orders extends Component {
@@ -13,13 +12,4 @@ class Orders extends Component {
   }
 }
 
-const mapStateToProps = state => {
-  return {
-    orders: state.orders,
-  };
-};
-
-export default connect(
-  mapStateToProps,
-  null
-)(Orders);
+export default Orders;

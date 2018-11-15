@@ -153,7 +153,10 @@ class Cart extends Component {
           </Query>
         </div>
         <br />
-        <Mutation mutation={POST_ORDER_MUTATION}>
+        <Mutation
+          mutation={POST_ORDER_MUTATION}
+          onCompleted={() => history.push('/orders')}
+        >
           {mutation => (
             <button
               className="btn btn-primary"

@@ -56270,7 +56270,12 @@ var Cart = function (_Component) {
         _react2.default.createElement('br', null),
         _react2.default.createElement(
           _reactApollo.Mutation,
-          { mutation: POST_ORDER_MUTATION },
+          {
+            mutation: POST_ORDER_MUTATION,
+            onCompleted: function onCompleted() {
+              return history.push('/orders');
+            }
+          },
           function (mutation) {
             return _react2.default.createElement(
               'button',
@@ -56932,8 +56937,6 @@ var _react = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 
 var _react2 = _interopRequireDefault(_react);
 
-var _reactRedux = __webpack_require__(/*! react-redux */ "./node_modules/react-redux/es/index.js");
-
 var _OrderTables = __webpack_require__(/*! ./OrderTables */ "./src/components/OrderTables.js");
 
 var _OrderTables2 = _interopRequireDefault(_OrderTables);
@@ -56974,13 +56977,7 @@ var Orders = function (_Component) {
   return Orders;
 }(_react.Component);
 
-var mapStateToProps = function mapStateToProps(state) {
-  return {
-    orders: state.orders
-  };
-};
-
-exports.default = (0, _reactRedux.connect)(mapStateToProps, null)(Orders);
+exports.default = Orders;
 
 /***/ }),
 
