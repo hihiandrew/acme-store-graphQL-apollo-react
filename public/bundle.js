@@ -56275,20 +56275,18 @@ var Cart = function (_Component) {
             return _react2.default.createElement(
               'button',
               {
-                className: 'btn btn-primary',
-                disabled: _react2.default.createElement(
-                  _reactApollo.Query,
-                  { query: CART_ITEMS_COUNT },
-                  function (_ref5) {
-                    var loading = _ref5.loading,
-                        error = _ref5.error,
-                        data = _ref5.data;
-
-                    if (loading || error) return 1;
-                    return data.cartItemsCount;
-                  }
-                ),
-                onClick: mutation
+                className: 'btn btn-primary'
+                // disabled={
+                //   <Query query={CART_ITEMS_COUNT}>
+                //     {({ loading, error, data }) => {
+                //       console.log(loading, error, data);
+                //       if (loading || error) return 1;
+                //       console.log(data.cartItemsCount);
+                //       return data.cartItemsCount;
+                //     }}
+                //   </Query>
+                // }
+                , onClick: mutation
               },
               'Create Order'
             );

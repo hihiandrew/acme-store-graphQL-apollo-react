@@ -50,7 +50,7 @@ type AuthPayload {
 }
 
 type Mutation {
-  updateOrder(id: String!, status: String): Order!
+  updateOrder(id: String, status: String): Order!
   deleteOrder(id: String): Int
 
   reset(id: String):Int

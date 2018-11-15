@@ -157,14 +157,16 @@ class Cart extends Component {
           {mutation => (
             <button
               className="btn btn-primary"
-              disabled={
-                <Query query={CART_ITEMS_COUNT}>
-                  {({ loading, error, data }) => {
-                    if (loading || error) return 1;
-                    return data.cartItemsCount;
-                  }}
-                </Query>
-              }
+              // disabled={
+              //   <Query query={CART_ITEMS_COUNT}>
+              //     {({ loading, error, data }) => {
+              //       console.log(loading, error, data);
+              //       if (loading || error) return 1;
+              //       console.log(data.cartItemsCount);
+              //       return data.cartItemsCount;
+              //     }}
+              //   </Query>
+              // }
               onClick={mutation}
             >
               Create Order
