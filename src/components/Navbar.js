@@ -15,11 +15,18 @@ const CARTITEMS_COUNT_QUERY = gql`
   }
 `;
 
+// const AUTH_USER_QUERY = gql`
+//   query {
+//     authUser @client {
+//       name
+//     }
+//   }
+// `;
+
 class Navbar extends Component {
   render() {
     const { path } = this.props;
-    const auth = localStorage.getItem(AUTH_TOKEN) || {};
-
+    const auth = localStorage.getItem(AUTH_TOKEN);
     return (
       <nav className="navbar navbar-expand-md navbar-light bg-light">
         <a className="navbar-brand" href="/">
@@ -72,7 +79,16 @@ class Navbar extends Component {
             </li>
             <li>
               <Link to={auth ? '/logout' : '/login'} className="nav-link">
-                {auth ? `Logout (${auth})` : 'Login'}
+                {auth
+                  ? `Logout (temp)`
+                  : // ${(<Query query={AUTH_USER_QUERY}>
+                    //       {({ data }) => {
+                    //         console.log('navbar', data.authUser);
+                    //         return authUser;
+                    //       }}
+                    //     </Query>
+                    //     )}
+                    'Login'}
               </Link>
             </li>
           </ul>

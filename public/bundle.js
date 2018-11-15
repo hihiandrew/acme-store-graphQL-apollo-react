@@ -55974,8 +55974,6 @@ var _StoreHeader = __webpack_require__(/*! ./StoreHeader */ "./src/components/St
 
 var _StoreHeader2 = _interopRequireDefault(_StoreHeader);
 
-var _store = __webpack_require__(/*! ../store */ "./src/store.js");
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -56011,10 +56009,12 @@ var App = function (_Component) {
         return _react2.default.createElement(_Login2.default, { path: path, history: history });
       };
       var renderLogout = function renderLogout(_ref3) {
-        var history = _ref3.history;
+        var location = _ref3.location,
+            history = _ref3.history;
 
-        (0, _store.logout)();
-        return null;
+        var path = location.pathname.split('/').pop();
+        localStorage.removeItem(_index.AUTH_TOKEN);
+        return _react2.default.createElement(_Login2.default, { path: path, history: history });
       };
       var renderCart = function renderCart(_ref4) {
         var history = _ref4.history;
@@ -56074,13 +56074,22 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
+var _templateObject = _taggedTemplateLiteral(['\n  query {\n    products {\n      name\n      id\n      lineItems(filter: "CART") {\n        id\n        quantity\n        orderId\n      }\n    }\n  }\n'], ['\n  query {\n    products {\n      name\n      id\n      lineItems(filter: "CART") {\n        id\n        quantity\n        orderId\n      }\n    }\n  }\n']),
+    _templateObject2 = _taggedTemplateLiteral(['\n  query {\n    cartItemsCount\n  }\n'], ['\n  query {\n    cartItemsCount\n  }\n']),
+    _templateObject3 = _taggedTemplateLiteral(['\n  mutation PostMutation($productId: Int!) {\n    createLineItem(productId: $productId) {\n      id\n      quantity\n      orderId\n    }\n  }\n'], ['\n  mutation PostMutation($productId: Int!) {\n    createLineItem(productId: $productId) {\n      id\n      quantity\n      orderId\n    }\n  }\n']),
+    _templateObject4 = _taggedTemplateLiteral(['\n  mutation DeleteMutation($lineItemId: Int!) {\n    deleteLineItem(id: $lineItemId)\n  }\n'], ['\n  mutation DeleteMutation($lineItemId: Int!) {\n    deleteLineItem(id: $lineItemId)\n  }\n']),
+    _templateObject5 = _taggedTemplateLiteral(['\n  mutation PutMutation($lineItemId: Int!, $quant: Int!, $inc: Boolean!) {\n    updateLineItem(id: $lineItemId, quantity: $quant, inc: $inc) {\n      id\n      quantity\n      productId\n      orderId\n    }\n  }\n'], ['\n  mutation PutMutation($lineItemId: Int!, $quant: Int!, $inc: Boolean!) {\n    updateLineItem(id: $lineItemId, quantity: $quant, inc: $inc) {\n      id\n      quantity\n      productId\n      orderId\n    }\n  }\n']),
+    _templateObject6 = _taggedTemplateLiteral(['\n  mutation PostOrderMutation {\n    updateOrder {\n      id\n      status\n    }\n  }\n'], ['\n  mutation PostOrderMutation {\n    updateOrder {\n      id\n      status\n    }\n  }\n']);
+
 var _react = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 
 var _react2 = _interopRequireDefault(_react);
 
-var _reactRedux = __webpack_require__(/*! react-redux */ "./node_modules/react-redux/es/index.js");
+var _reactApollo = __webpack_require__(/*! react-apollo */ "./node_modules/react-apollo/react-apollo.browser.umd.js");
 
-var _store = __webpack_require__(/*! ../store */ "./src/store.js");
+var _graphqlTag = __webpack_require__(/*! graphql-tag */ "./node_modules/graphql-tag/src/index.js");
+
+var _graphqlTag2 = _interopRequireDefault(_graphqlTag);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -56090,51 +56099,60 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
+function _taggedTemplateLiteral(strings, raw) { return Object.freeze(Object.defineProperties(strings, { raw: { value: Object.freeze(raw) } })); }
+
+var PRODUCTS_QUERY = (0, _graphqlTag2.default)(_templateObject);
+var CART_ITEMS_COUNT = (0, _graphqlTag2.default)(_templateObject2);
+
+var POST_MUTATION = (0, _graphqlTag2.default)(_templateObject3);
+var DEL_MUTATION = (0, _graphqlTag2.default)(_templateObject4);
+var PUT_MUTATION = (0, _graphqlTag2.default)(_templateObject5);
+
+var POST_ORDER_MUTATION = (0, _graphqlTag2.default)(_templateObject6);
+
 var Cart = function (_Component) {
   _inherits(Cart, _Component);
 
   function Cart() {
+    var _ref;
+
+    var _temp, _this, _ret;
+
     _classCallCheck(this, Cart);
 
-    return _possibleConstructorReturn(this, (Cart.__proto__ || Object.getPrototypeOf(Cart)).apply(this, arguments));
+    for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+
+    return _ret = (_temp = (_this = _possibleConstructorReturn(this, (_ref = Cart.__proto__ || Object.getPrototypeOf(Cart)).call.apply(_ref, [this].concat(args))), _this), _this._updateCacheAfterTrade = function (store, trade, productId) {
+      var data = store.readQuery({
+        query: PRODUCTS_QUERY
+      });
+      //conditional del as mutation doesnt return quantity, instead we remove it
+      var tradedProduct = data.products.find(function (prod) {
+        return prod.id === productId;
+      });
+      if (!trade) {
+        tradedProduct.lineItems = [];
+      } else {
+        if (trade.quantity == 1) {
+          //create lineItem
+          tradedProduct.lineItems.push(trade);
+        } else {
+          //increment/decrement first (and only) lineItem
+          tradedProduct.lineItems[0].quantity = trade.quantity;
+        }
+      }
+      store.writeQuery({ query: PRODUCTS_QUERY, data: data });
+    }, _temp), _possibleConstructorReturn(_this, _ret);
   }
 
   _createClass(Cart, [{
     key: 'render',
     value: function render() {
-      var _props = this.props,
-          products = _props.products,
-          orderId = _props.orderId,
-          orders = _props.orders,
-          createUpdateLineItem = _props.createUpdateLineItem,
-          createOrder = _props.createOrder,
-          history = _props.history;
+      var _this2 = this;
 
-
-      var totalOrders = void 0,
-          cart = void 0,
-          itemsInCart = void 0;
-      if (orders.length) {
-        totalOrders = orders.filter(function (o) {
-          return o.status == 'ORDER';
-        }).length;
-        cart = orders.find(function (o) {
-          return o.status == 'CART';
-        });
-        itemsInCart = cart.lineitems.reduce(function (init, curr) {
-          return init + curr.quantity;
-        }, 0);
-      }
-
-      var productCount = function productCount(productId) {
-        var item = cart.lineitems.find(function (i) {
-          return i.productId == productId;
-        });
-        if (!item) {
-          return 0;
-        }
-        return item.quantity;
-      };
+      var history = this.props.history;
 
       return _react2.default.createElement(
         'div',
@@ -56147,63 +56165,134 @@ var Cart = function (_Component) {
         _react2.default.createElement(
           'div',
           { className: 'row' },
-          products.map(function (prod) {
-            var id = prod.id,
-                name = prod.name;
+          _react2.default.createElement(
+            _reactApollo.Query,
+            { query: PRODUCTS_QUERY },
+            function (_ref2) {
+              var loading = _ref2.loading,
+                  error = _ref2.error,
+                  data = _ref2.data;
 
-            return _react2.default.createElement(
-              'div',
-              { className: 'col-sm-3 border rounded p-3', key: id },
-              _react2.default.createElement(
-                'p',
+              if (loading) return _react2.default.createElement(
+                'div',
                 null,
-                name
-              ),
-              _react2.default.createElement(
-                'p',
+                'Loading..'
+              );
+              if (error) return _react2.default.createElement(
+                'div',
                 null,
-                productCount(id),
-                ' ordered'
-              ),
-              _react2.default.createElement(
-                'button',
-                {
-                  id: id,
-                  onClick: function onClick() {
-                    return createUpdateLineItem(id, 1, orders);
-                  },
-                  className: 'btn btn-primary'
-                },
-                '+'
-              ),
-              ' ',
-              _react2.default.createElement(
-                'button',
-                {
-                  id: id,
-                  onClick: function onClick() {
-                    return createUpdateLineItem(id, -1, orders);
-                  },
-                  disabled: !productCount(id),
-                  className: 'btn btn-primary'
-                },
-                '-'
-              )
-            );
-          })
+                'Error'
+              );
+              return data.products.map(function (prod) {
+                var productId = prod.id,
+                    name = prod.name,
+                    lineItems = prod.lineItems;
+
+                var lineItemId = void 0,
+                    quantity = void 0;
+                if (lineItems.length) {
+                  lineItemId = lineItems[0].id;
+                  quantity = lineItems[0].quantity;
+                }
+                var quant = quantity === undefined ? 0 : quantity;
+                return _react2.default.createElement(
+                  'div',
+                  { className: 'col-sm-3 border rounded p-3', key: prod.id },
+                  _react2.default.createElement(
+                    'p',
+                    null,
+                    name
+                  ),
+                  _react2.default.createElement(
+                    'p',
+                    null,
+                    quant,
+                    ' ordered'
+                  ),
+                  _react2.default.createElement(
+                    _reactApollo.Mutation,
+                    {
+                      mutation: quant ? PUT_MUTATION : POST_MUTATION,
+                      variables: {
+                        quant: quant,
+                        productId: productId,
+                        inc: true,
+                        lineItemId: lineItemId
+                      },
+                      update: function update(store, _ref3) {
+                        var data = _ref3.data;
+
+                        _this2._updateCacheAfterTrade(store, quant ? data.updateLineItem : data.createLineItem, productId);
+                      }
+                    },
+                    function (mutation) {
+                      return _react2.default.createElement(
+                        'button',
+                        { onClick: mutation, className: 'btn btn-primary' },
+                        '+'
+                      );
+                    }
+                  ),
+                  ' ',
+                  _react2.default.createElement(
+                    _reactApollo.Mutation,
+                    {
+                      mutation: quant === 1 ? DEL_MUTATION : PUT_MUTATION,
+                      variables: {
+                        quant: quant,
+                        productId: productId,
+                        inc: false,
+                        lineItemId: lineItemId
+                      },
+                      update: function update(store, _ref4) {
+                        var data = _ref4.data;
+
+                        _this2._updateCacheAfterTrade(store, quant === 1 ? null : data.updateLineItem, productId);
+                      }
+                    },
+                    function (mutation) {
+                      return _react2.default.createElement(
+                        'button',
+                        {
+                          onClick: mutation,
+                          disabled: !quant,
+                          className: 'btn btn-primary'
+                        },
+                        '-'
+                      );
+                    }
+                  )
+                );
+              });
+            }
+          )
         ),
         _react2.default.createElement('br', null),
         _react2.default.createElement(
-          'button',
-          {
-            className: 'btn btn-primary',
-            disabled: !itemsInCart,
-            onClick: function onClick() {
-              createOrder(orders);
-              history.push('/orders');
-            }
-          },
-          'Create Order'
+          _reactApollo.Mutation,
+          { mutation: POST_ORDER_MUTATION },
+          function (mutation) {
+            return _react2.default.createElement(
+              'button',
+              {
+                className: 'btn btn-primary',
+                disabled: _react2.default.createElement(
+                  _reactApollo.Query,
+                  { query: CART_ITEMS_COUNT },
+                  function (_ref5) {
+                    var loading = _ref5.loading,
+                        error = _ref5.error,
+                        data = _ref5.data;
+
+                    if (loading || error) return 1;
+                    return data.cartItemsCount;
+                  }
+                ),
+                onClick: mutation
+              },
+              'Create Order'
+            );
+          }
         )
       );
     }
@@ -56212,26 +56301,7 @@ var Cart = function (_Component) {
   return Cart;
 }(_react.Component);
 
-var mapStateToProps = function mapStateToProps(state) {
-  return {
-    orders: state.orders,
-    products: state.products,
-    orderId: state.orderId
-  };
-};
-
-var mapDispatchToProps = function mapDispatchToProps(dispatch) {
-  return {
-    createUpdateLineItem: function createUpdateLineItem(id, change, orders) {
-      return dispatch((0, _store.createUpdateLineItem)(id, change, orders));
-    },
-    createOrder: function createOrder(orders) {
-      return dispatch((0, _store.createOrder)(orders));
-    }
-  };
-};
-
-exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(Cart);
+exports.default = Cart;
 
 /***/ }),
 
@@ -56357,10 +56427,8 @@ var Login = function (_Component) {
       var history = _this.props.history;
 
       var _ref = login ? data.login : data.signup,
-          token = _ref.token,
-          user = _ref.user;
+          token = _ref.token;
 
-      console.log('user', user);
       _this.saveUserData(token);
       history.push('/');
     };
@@ -56384,6 +56452,7 @@ var Login = function (_Component) {
           password = _state.password,
           error = _state.error,
           login = _state.login;
+      var history = this.props.history;
       var handleChange = this.handleChange,
           handleSave = this.handleSave;
 
@@ -56398,7 +56467,6 @@ var Login = function (_Component) {
           onChange: handleChange
         }),
         _react2.default.createElement('br', null),
-        '//direct write to local state with ApolloConsumer + client.writeData()',
         _react2.default.createElement(
           _reactApollo.ApolloConsumer,
           null,
@@ -56411,9 +56479,12 @@ var Login = function (_Component) {
                 onCompleted: function onCompleted(data) {
                   var _ref2 = login ? data.login : data.signup,
                       user = _ref2.user;
+                  // console.log('client.write', user);
+
 
                   client.writeData({ data: { authUser: user } });
                   handleSave(data);
+                  history.push('/cart');
                 }
               },
               function (mutation) {
@@ -56491,6 +56562,14 @@ function _taggedTemplateLiteral(strings, raw) { return Object.freeze(Object.defi
 var ORDERS_COUNT_QUERY = (0, _graphqlTag2.default)(_templateObject);
 var CARTITEMS_COUNT_QUERY = (0, _graphqlTag2.default)(_templateObject2);
 
+// const AUTH_USER_QUERY = gql`
+//   query {
+//     authUser @client {
+//       name
+//     }
+//   }
+// `;
+
 var Navbar = function (_Component) {
   _inherits(Navbar, _Component);
 
@@ -56505,8 +56584,7 @@ var Navbar = function (_Component) {
     value: function render() {
       var path = this.props.path;
 
-      var auth = localStorage.getItem(_index.AUTH_TOKEN) || {};
-
+      var auth = localStorage.getItem(_index.AUTH_TOKEN);
       return _react2.default.createElement(
         'nav',
         { className: 'navbar navbar-expand-md navbar-light bg-light' },
@@ -56611,7 +56689,14 @@ var Navbar = function (_Component) {
               _react2.default.createElement(
                 _reactRouterDom.Link,
                 { to: auth ? '/logout' : '/login', className: 'nav-link' },
-                auth ? 'Logout (' + auth + ')' : 'Login'
+                auth ? 'Logout (temp)' : // ${(<Query query={AUTH_USER_QUERY}>
+                //       {({ data }) => {
+                //         console.log('navbar', data.authUser);
+                //         return authUser;
+                //       }}
+                //     </Query>
+                //     )}
+                'Login'
               )
             )
           )
@@ -57079,11 +57164,7 @@ var authLink = (0, _apolloLinkContext.setContext)(function (_, _ref) {
 var client = new _apolloClient.ApolloClient({
   link: authLink.concat(httpLink),
   cache: new _apolloCacheInmemory.InMemoryCache(),
-  clientState: {
-    defaults: defaults,
-    resolvers: resolvers,
-    typeDefs: typeDefs
-  }
+  clientState: {}
 });
 
 (0, _reactDom.render)(_react2.default.createElement(

@@ -1,100 +1,179 @@
 import React, { Component } from 'react';
-import { connect } from 'react-redux';
-import { createUpdateLineItem, createOrder } from '../store';
+import { Query, Mutation } from 'react-apollo';
+import gql from 'graphql-tag';
+
+const PRODUCTS_QUERY = gql`
+  query {
+    products {
+      name
+      id
+      lineItems(filter: "CART") {
+        id
+        quantity
+        orderId
+      }
+    }
+  }
+`;
+const CART_ITEMS_COUNT = gql`
+  query {
+    cartItemsCount
+  }
+`;
+
+const POST_MUTATION = gql`
+  mutation PostMutation($productId: Int!) {
+    createLineItem(productId: $productId) {
+      id
+      quantity
+      orderId
+    }
+  }
+`;
+const DEL_MUTATION = gql`
+  mutation DeleteMutation($lineItemId: Int!) {
+    deleteLineItem(id: $lineItemId)
+  }
+`;
+const PUT_MUTATION = gql`
+  mutation PutMutation($lineItemId: Int!, $quant: Int!, $inc: Boolean!) {
+    updateLineItem(id: $lineItemId, quantity: $quant, inc: $inc) {
+      id
+      quantity
+      productId
+      orderId
+    }
+  }
+`;
+
+const POST_ORDER_MUTATION = gql`
+  mutation PostOrderMutation {
+    updateOrder {
+      id
+      status
+    }
+  }
+`;
 
 class Cart extends Component {
-  render() {
-
-    const {
-      products,
-      orderId,
-      orders,
-      createUpdateLineItem,
-      createOrder,
-      history,
-    } = this.props;
-
-    let totalOrders, cart, itemsInCart;
-    if (orders.length) {
-      totalOrders = orders.filter(o => o.status == 'ORDER').length;
-      cart = orders.find(o => o.status == 'CART');
-      itemsInCart = cart.lineitems.reduce(
-        (init, curr) => init + curr.quantity,
-        0
-      );
-    }
-
-    const productCount = productId => {
-      const item = cart.lineitems.find(i => i.productId == productId)
-      if (!item) {
-        return 0
+  _updateCacheAfterTrade = (store, trade, productId) => {
+    const data = store.readQuery({
+      query: PRODUCTS_QUERY,
+    });
+    //conditional del as mutation doesnt return quantity, instead we remove it
+    let tradedProduct = data.products.find(prod => prod.id === productId);
+    if (!trade) {
+      tradedProduct.lineItems = [];
+    } else {
+      if (trade.quantity == 1) {
+        //create lineItem
+        tradedProduct.lineItems.push(trade);
+      } else {
+        //increment/decrement first (and only) lineItem
+        tradedProduct.lineItems[0].quantity = trade.quantity;
       }
-      return item.quantity
     }
+    store.writeQuery({ query: PRODUCTS_QUERY, data });
+  };
 
+  render() {
+    const { history } = this.props;
     return (
       <div className="container">
         <h3>Products</h3>
         <div className="row">
-          {products.map(prod => {
-            const { id, name } = prod;
-            return (
-              <div className="col-sm-3 border rounded p-3" key={id}>
-                <p>{name}</p>
-                <p>{productCount(id)} ordered</p>
-                <button
-                  id={id}
-                  onClick={() => createUpdateLineItem(id, 1, orders)}
-                  className="btn btn-primary"
-                >
-                  +
-                </button>{' '}
-                <button
-                  id={id}
-                  onClick={() => createUpdateLineItem(id, -1, orders)}
-                  disabled={!productCount(id)}
-                  className="btn btn-primary"
-                >
-                  -
-                </button>
-              </div>
-            );
-          })}
+          <Query query={PRODUCTS_QUERY}>
+            {({ loading, error, data }) => {
+              if (loading) return <div>Loading..</div>;
+              if (error) return <div>Error</div>;
+              return data.products.map(prod => {
+                const { id: productId, name, lineItems } = prod;
+                let lineItemId, quantity;
+                if (lineItems.length) {
+                  lineItemId = lineItems[0].id;
+                  quantity = lineItems[0].quantity;
+                }
+                const quant = quantity === undefined ? 0 : quantity;
+                return (
+                  <div className="col-sm-3 border rounded p-3" key={prod.id}>
+                    <p>{name}</p>
+                    <p>{quant} ordered</p>
+                    <Mutation
+                      mutation={quant ? PUT_MUTATION : POST_MUTATION}
+                      variables={{
+                        quant,
+                        productId,
+                        inc: true,
+                        lineItemId,
+                      }}
+                      update={(store, { data }) => {
+                        this._updateCacheAfterTrade(
+                          store,
+                          quant ? data.updateLineItem : data.createLineItem,
+                          productId
+                        );
+                      }}
+                    >
+                      {mutation => (
+                        <button onClick={mutation} className="btn btn-primary">
+                          +
+                        </button>
+                      )}
+                    </Mutation>{' '}
+                    <Mutation
+                      mutation={quant === 1 ? DEL_MUTATION : PUT_MUTATION}
+                      variables={{
+                        quant,
+                        productId,
+                        inc: false,
+                        lineItemId,
+                      }}
+                      update={(store, { data }) => {
+                        this._updateCacheAfterTrade(
+                          store,
+                          quant === 1 ? null : data.updateLineItem,
+                          productId
+                        );
+                      }}
+                    >
+                      {mutation => (
+                        <button
+                          onClick={mutation}
+                          disabled={!quant}
+                          className="btn btn-primary"
+                        >
+                          -
+                        </button>
+                      )}
+                    </Mutation>
+                  </div>
+                );
+              });
+            }}
+          </Query>
         </div>
         <br />
-        <button
-          className="btn btn-primary"
-          disabled={!itemsInCart}
-          onClick={() => {
-            createOrder(orders);
-            history.push('/orders');
-          }}
-        >
-          Create Order
-        </button>
+        <Mutation mutation={POST_ORDER_MUTATION}>
+          {mutation => (
+            <button
+              className="btn btn-primary"
+              disabled={
+                <Query query={CART_ITEMS_COUNT}>
+                  {({ loading, error, data }) => {
+                    if (loading || error) return 1;
+                    return data.cartItemsCount;
+                  }}
+                </Query>
+              }
+              onClick={mutation}
+            >
+              Create Order
+            </button>
+          )}
+        </Mutation>
       </div>
     );
   }
 }
 
-const mapStateToProps = state => {
-  return {
-    orders: state.orders,
-    products: state.products,
-    orderId: state.orderId,
-  };
-};
-
-const mapDispatchToProps = dispatch => {
-  return {
-    createUpdateLineItem: (id, change, orders) =>
-      dispatch(createUpdateLineItem(id, change, orders)),
-    createOrder: orders =>
-      dispatch(createOrder(orders)),
-  };
-};
-
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(Cart);
+export default Cart;

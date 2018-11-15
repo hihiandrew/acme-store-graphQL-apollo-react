@@ -45,13 +45,13 @@ class Login extends Component {
   handleSave = data => {
     const { login } = this.state;
     const { history } = this.props;
-    const { token, user } = login ? data.login : data.signup;
-    console.log('user', user);
+    const { token } = login ? data.login : data.signup;
     this.saveUserData(token);
     history.push('/');
   };
   render() {
     const { name, password, error, login } = this.state;
+    const { history } = this.props;
     const { handleChange, handleSave } = this;
     return (
       <div>
@@ -63,7 +63,7 @@ class Login extends Component {
           onChange={handleChange}
         />
         <br />
-        //direct write to local state with ApolloConsumer + client.writeData()
+        {/* direct write to local state with ApolloConsumer + client.writeData() */}
         <ApolloConsumer>
           {client => (
             <Mutation
@@ -71,8 +71,10 @@ class Login extends Component {
               variables={{ name, password }}
               onCompleted={data => {
                 const { user } = login ? data.login : data.signup;
+                // console.log('client.write', user);
                 client.writeData({ data: { authUser: user } });
                 handleSave(data);
+                history.push('/cart');
               }}
             >
               {mutation => (

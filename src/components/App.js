@@ -7,13 +7,6 @@ import Cart from './Cart';
 import Orders from './Orders';
 import Login from './Login';
 import StoreHeader from './StoreHeader';
-import {
-  getOrders,
-  getProducts,
-  resetAll,
-  exchangeTokenForAuth,
-  logout,
-} from '../store';
 
 class App extends Component {
   render() {
@@ -26,9 +19,10 @@ class App extends Component {
       const path = location.pathname;
       return <Login path={path} history={history} />;
     };
-    const renderLogout = ({ history }) => {
-      logout();
-      return null;
+    const renderLogout = ({ location, history }) => {
+      const path = location.pathname.split('/').pop();
+      localStorage.removeItem(AUTH_TOKEN);
+      return <Login path={path} history={history} />;
     };
     const renderCart = ({ history }) => {
       return <Cart history={history} />;
