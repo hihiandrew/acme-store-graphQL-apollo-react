@@ -52,6 +52,42 @@ const CART_ITEMS_COUNT = gql `
   }
 `;
 
+//cart?
+export const POST_MUTATION = gql `
+  mutation PostMutation($productId: Int!) {
+    createLineItem(productId: $productId) {
+      id
+      quantity
+      orderId
+    }
+  }
+`;
+export const DEL_MUTATION = gql `
+  mutation DeleteMutation($lineItemId: Int!) {
+    deleteLineItem(id: $lineItemId)
+  }
+`;
+export const PUT_MUTATION = gql `
+  mutation PutMutation($lineItemId: Int!, $quant: Int!, $inc: Boolean!) {
+    updateLineItem(id: $lineItemId, quantity: $quant, inc: $inc) {
+      id
+      quantity
+      productId
+      orderId
+    }
+  }
+`;
+
+export const POST_ORDER_MUTATION = gql `
+  mutation PostOrderMutation {
+    updateOrder {
+      status
+      id
+
+    }
+  }
+`;
+
 //login
 export const LOGIN_MUTATION = gql `
   mutation LoginMutation($name: String!, $password: String!) {

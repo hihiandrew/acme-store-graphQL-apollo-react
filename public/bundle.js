@@ -52448,11 +52448,6 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _templateObject = _taggedTemplateLiteral(['\n  mutation PostMutation($productId: Int!) {\n    createLineItem(productId: $productId) {\n      id\n      quantity\n      orderId\n    }\n  }\n'], ['\n  mutation PostMutation($productId: Int!) {\n    createLineItem(productId: $productId) {\n      id\n      quantity\n      orderId\n    }\n  }\n']),
-    _templateObject2 = _taggedTemplateLiteral(['\n  mutation DeleteMutation($lineItemId: Int!) {\n    deleteLineItem(id: $lineItemId)\n  }\n'], ['\n  mutation DeleteMutation($lineItemId: Int!) {\n    deleteLineItem(id: $lineItemId)\n  }\n']),
-    _templateObject3 = _taggedTemplateLiteral(['\n  mutation PutMutation($lineItemId: Int!, $quant: Int!, $inc: Boolean!) {\n    updateLineItem(id: $lineItemId, quantity: $quant, inc: $inc) {\n      id\n      quantity\n      productId\n      orderId\n    }\n  }\n'], ['\n  mutation PutMutation($lineItemId: Int!, $quant: Int!, $inc: Boolean!) {\n    updateLineItem(id: $lineItemId, quantity: $quant, inc: $inc) {\n      id\n      quantity\n      productId\n      orderId\n    }\n  }\n']),
-    _templateObject4 = _taggedTemplateLiteral(['\n  mutation PostOrderMutation {\n    updateOrder {\n      status\n      id\n\n    }\n  }\n'], ['\n  mutation PostOrderMutation {\n    updateOrder {\n      status\n      id\n\n    }\n  }\n']);
-
 var _react = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 
 var _react2 = _interopRequireDefault(_react);
@@ -52468,14 +52463,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-function _taggedTemplateLiteral(strings, raw) { return Object.freeze(Object.defineProperties(strings, { raw: { value: Object.freeze(raw) } })); }
-
-var POST_MUTATION = gql(_templateObject);
-var DEL_MUTATION = gql(_templateObject2);
-var PUT_MUTATION = gql(_templateObject3);
-
-var POST_ORDER_MUTATION = gql(_templateObject4);
 
 var Cart = function (_Component) {
   _inherits(Cart, _Component);
@@ -52513,10 +52500,10 @@ var Cart = function (_Component) {
       store.writeQuery({ query: _queries.PRODUCTS_QUERY, data: data });
     }, _this._updateCacheAfterOrder = function (store, order, productId) {
       var data = store.readQuery({
-        query: POST_ORDER_MUTATION
+        query: _queries.POST_ORDER_MUTATION
       });
 
-      store.writeQuery({ query: POST_ORDER_MUTATION, data: data });
+      store.writeQuery({ query: _queries.POST_ORDER_MUTATION, data: data });
     }, _temp), _possibleConstructorReturn(_this, _ret);
   }
 
@@ -52585,7 +52572,7 @@ var Cart = function (_Component) {
                   _react2.default.createElement(
                     _reactApollo.Mutation,
                     {
-                      mutation: quant ? PUT_MUTATION : POST_MUTATION,
+                      mutation: quant ? _queries.PUT_MUTATION : _queries.POST_MUTATION,
                       variables: {
                         quant: quant,
                         productId: productId,
@@ -52610,7 +52597,7 @@ var Cart = function (_Component) {
                   _react2.default.createElement(
                     _reactApollo.Mutation,
                     {
-                      mutation: quant === 1 ? DEL_MUTATION : PUT_MUTATION,
+                      mutation: quant === 1 ? _queries.DEL_MUTATION : _queries.PUT_MUTATION,
                       variables: {
                         quant: quant,
                         productId: productId,
@@ -52644,7 +52631,7 @@ var Cart = function (_Component) {
         _react2.default.createElement(
           _reactApollo.Mutation,
           {
-            mutation: POST_ORDER_MUTATION,
+            mutation: _queries.POST_ORDER_MUTATION,
             onCompleted: function onCompleted() {
               return history.push('/orders');
             },
@@ -53400,8 +53387,8 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 var AUTH_TOKEN = exports.AUTH_TOKEN = 'token-1806';
 
 var httpLink = (0, _apolloLinkHttp.createHttpLink)({
-  // uri: 'http://localhost:8080/graphql',
-  uri: 'https://f5c3c09755cc4acd97e2d93560e90e54.vfs.cloud9.us-east-1.amazonaws.com/graphql'
+  uri: 'http://localhost:8080/graphql'
+  // uri: `https://vfs.cloud9.us-east-1.amazonaws.com/graphql`,
 });
 
 var authLink = (0, _apolloLinkContext.setContext)(function (_, _ref) {
@@ -53442,16 +53429,20 @@ var client = new _apolloClient.ApolloClient({
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.ORDERS_QUERY = exports.SIGNUP_MUTATION = exports.LOGIN_MUTATION = exports.PRODUCTS_QUERY = exports.RESET_MUTATION = exports.LINEITEMS_QUERY = exports.CARTITEMS_COUNT_QUERY = exports.ORDERS_COUNT_QUERY = undefined;
+exports.ORDERS_QUERY = exports.SIGNUP_MUTATION = exports.LOGIN_MUTATION = exports.POST_ORDER_MUTATION = exports.PUT_MUTATION = exports.DEL_MUTATION = exports.POST_MUTATION = exports.PRODUCTS_QUERY = exports.RESET_MUTATION = exports.LINEITEMS_QUERY = exports.CARTITEMS_COUNT_QUERY = exports.ORDERS_COUNT_QUERY = undefined;
 
 var _templateObject = _taggedTemplateLiteral(['\nquery{\n  orders(filter: "ORDER"){\n    id\n  }\n}\n'], ['\nquery{\n  orders(filter: "ORDER"){\n    id\n  }\n}\n']),
     _templateObject2 = _taggedTemplateLiteral(['\n  query {\n    cartItemsCount\n  }\n'], ['\n  query {\n    cartItemsCount\n  }\n']),
     _templateObject3 = _taggedTemplateLiteral(['\n  query {\n    orders {\n      status\n      lineItems {\n        quantity\n      }\n    }\n  }\n'], ['\n  query {\n    orders {\n      status\n      lineItems {\n        quantity\n      }\n    }\n  }\n']),
     _templateObject4 = _taggedTemplateLiteral(['\n  mutation {\n    reset\n  }\n'], ['\n  mutation {\n    reset\n  }\n']),
     _templateObject5 = _taggedTemplateLiteral(['\n  query {\n    products {\n      name\n      id\n      lineItems(filter: "CART") {\n        id\n        quantity\n        orderId\n      }\n    }\n  }\n'], ['\n  query {\n    products {\n      name\n      id\n      lineItems(filter: "CART") {\n        id\n        quantity\n        orderId\n      }\n    }\n  }\n']),
-    _templateObject6 = _taggedTemplateLiteral(['\n  mutation LoginMutation($name: String!, $password: String!) {\n    login(name: $name, password: $password) {\n      token\n      user {\n        name\n      }\n    }\n  }\n'], ['\n  mutation LoginMutation($name: String!, $password: String!) {\n    login(name: $name, password: $password) {\n      token\n      user {\n        name\n      }\n    }\n  }\n']),
-    _templateObject7 = _taggedTemplateLiteral(['\n  mutation SignupMutation($name: String!, $password: String!) {\n    signup(name: $name, password: $password) {\n      token\n      user {\n        name\n      }\n    }\n  }\n'], ['\n  mutation SignupMutation($name: String!, $password: String!) {\n    signup(name: $name, password: $password) {\n      token\n      user {\n        name\n      }\n    }\n  }\n']),
-    _templateObject8 = _taggedTemplateLiteral(['\nquery{\n  orders(filter: "ORDER"){\n    id\n    lineItems{\n      quantity\n      product{\n        name\n      }\n    }\n  }\n}\n'], ['\nquery{\n  orders(filter: "ORDER"){\n    id\n    lineItems{\n      quantity\n      product{\n        name\n      }\n    }\n  }\n}\n']);
+    _templateObject6 = _taggedTemplateLiteral(['\n  mutation PostMutation($productId: Int!) {\n    createLineItem(productId: $productId) {\n      id\n      quantity\n      orderId\n    }\n  }\n'], ['\n  mutation PostMutation($productId: Int!) {\n    createLineItem(productId: $productId) {\n      id\n      quantity\n      orderId\n    }\n  }\n']),
+    _templateObject7 = _taggedTemplateLiteral(['\n  mutation DeleteMutation($lineItemId: Int!) {\n    deleteLineItem(id: $lineItemId)\n  }\n'], ['\n  mutation DeleteMutation($lineItemId: Int!) {\n    deleteLineItem(id: $lineItemId)\n  }\n']),
+    _templateObject8 = _taggedTemplateLiteral(['\n  mutation PutMutation($lineItemId: Int!, $quant: Int!, $inc: Boolean!) {\n    updateLineItem(id: $lineItemId, quantity: $quant, inc: $inc) {\n      id\n      quantity\n      productId\n      orderId\n    }\n  }\n'], ['\n  mutation PutMutation($lineItemId: Int!, $quant: Int!, $inc: Boolean!) {\n    updateLineItem(id: $lineItemId, quantity: $quant, inc: $inc) {\n      id\n      quantity\n      productId\n      orderId\n    }\n  }\n']),
+    _templateObject9 = _taggedTemplateLiteral(['\n  mutation PostOrderMutation {\n    updateOrder {\n      status\n      id\n\n    }\n  }\n'], ['\n  mutation PostOrderMutation {\n    updateOrder {\n      status\n      id\n\n    }\n  }\n']),
+    _templateObject10 = _taggedTemplateLiteral(['\n  mutation LoginMutation($name: String!, $password: String!) {\n    login(name: $name, password: $password) {\n      token\n      user {\n        name\n      }\n    }\n  }\n'], ['\n  mutation LoginMutation($name: String!, $password: String!) {\n    login(name: $name, password: $password) {\n      token\n      user {\n        name\n      }\n    }\n  }\n']),
+    _templateObject11 = _taggedTemplateLiteral(['\n  mutation SignupMutation($name: String!, $password: String!) {\n    signup(name: $name, password: $password) {\n      token\n      user {\n        name\n      }\n    }\n  }\n'], ['\n  mutation SignupMutation($name: String!, $password: String!) {\n    signup(name: $name, password: $password) {\n      token\n      user {\n        name\n      }\n    }\n  }\n']),
+    _templateObject12 = _taggedTemplateLiteral(['\nquery{\n  orders(filter: "ORDER"){\n    id\n    lineItems{\n      quantity\n      product{\n        name\n      }\n    }\n  }\n}\n'], ['\nquery{\n  orders(filter: "ORDER"){\n    id\n    lineItems{\n      quantity\n      product{\n        name\n      }\n    }\n  }\n}\n']);
 
 var _graphqlTag = __webpack_require__(/*! graphql-tag */ "./node_modules/graphql-tag/src/index.js");
 
@@ -53474,12 +53465,19 @@ var RESET_MUTATION = exports.RESET_MUTATION = (0, _graphqlTag2.default)(_templat
 var PRODUCTS_QUERY = exports.PRODUCTS_QUERY = (0, _graphqlTag2.default)(_templateObject5);
 var CART_ITEMS_COUNT = (0, _graphqlTag2.default)(_templateObject2);
 
+//cart?
+var POST_MUTATION = exports.POST_MUTATION = (0, _graphqlTag2.default)(_templateObject6);
+var DEL_MUTATION = exports.DEL_MUTATION = (0, _graphqlTag2.default)(_templateObject7);
+var PUT_MUTATION = exports.PUT_MUTATION = (0, _graphqlTag2.default)(_templateObject8);
+
+var POST_ORDER_MUTATION = exports.POST_ORDER_MUTATION = (0, _graphqlTag2.default)(_templateObject9);
+
 //login
-var LOGIN_MUTATION = exports.LOGIN_MUTATION = (0, _graphqlTag2.default)(_templateObject6);
-var SIGNUP_MUTATION = exports.SIGNUP_MUTATION = (0, _graphqlTag2.default)(_templateObject7);
+var LOGIN_MUTATION = exports.LOGIN_MUTATION = (0, _graphqlTag2.default)(_templateObject10);
+var SIGNUP_MUTATION = exports.SIGNUP_MUTATION = (0, _graphqlTag2.default)(_templateObject11);
 
 //orders
-var ORDERS_QUERY = exports.ORDERS_QUERY = (0, _graphqlTag2.default)(_templateObject8);
+var ORDERS_QUERY = exports.ORDERS_QUERY = (0, _graphqlTag2.default)(_templateObject12);
 
 /***/ }),
 

@@ -15,26 +15,30 @@ Order.belongsTo(User);
 
 const seed = () => {
   return Promise.all([
-    User.create({ name: 'moe', password: 'moe' }),
-    User.create({ name: 'larry', password: 'larry' }),
-    User.create({ name: 'admin', password: 'admin' }),
-  ])
+      User.create({ name: 'moe', password: 'moe' }),
+      User.create({ name: 'larry', password: 'larry' }),
+      User.create({ name: 'admin', password: 'admin' }),
+    ])
     .then(([moe, larry, admin]) => {
       return Promise.all([
-        Product.create({ name: 'milk' }),
-        Product.create({ name: 'bread' }),
-        Product.create({ name: 'eggs' }),
-        Product.create({ name: 'coffee' }),
+        Product.create({ name: 'vhs tape' }),
+        Product.create({ name: 'durian' }),
+        Product.create({ name: 'e coli' }),
+        Product.create({ name: `father's browser history` }),
+        Product.create({ name: 'high energy nuclear matter' }),
+        Product.create({ name: 'handful of wires' }),
+        Product.create({ name: 'loud cough' }),
+        Product.create({ name: 'left handed biro' }),
         Order.create({ status: 'ORDER', userId: moe.id }),
         Order.create({ status: 'ORDER', userId: larry.id }),
       ]);
     })
-    .then(([milk, bread, eggs, coffee, order1, order2]) => {
+    .then(([p1, p2, p3, p4, p5, p6, p7, p8, order1, order2]) => {
       return Promise.all([
-        LineItem.create({ orderId: order1.id, productId: milk.id }),
-        LineItem.create({ orderId: order2.id, productId: bread.id }),
-        LineItem.create({ orderId: order2.id, productId: eggs.id }),
-        LineItem.create({ orderId: order2.id, productId: coffee.id }),
+        LineItem.create({ orderId: order1.id, productId: p1.id }),
+        LineItem.create({ orderId: order2.id, productId: p6.id }),
+        LineItem.create({ orderId: order2.id, productId: p7.id }),
+        LineItem.create({ orderId: order2.id, productId: p8.id }),
       ]);
     })
     .catch(err => console.log(err));

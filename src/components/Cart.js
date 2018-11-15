@@ -1,41 +1,6 @@
 import React, { Component } from 'react';
 import { Query, Mutation } from 'react-apollo';
-import { PRODUCTS_QUERY, CART_ITEMS_COUNT, ORDERS_QUERY } from '../queries'
-
-const POST_MUTATION = gql `
-  mutation PostMutation($productId: Int!) {
-    createLineItem(productId: $productId) {
-      id
-      quantity
-      orderId
-    }
-  }
-`;
-const DEL_MUTATION = gql `
-  mutation DeleteMutation($lineItemId: Int!) {
-    deleteLineItem(id: $lineItemId)
-  }
-`;
-const PUT_MUTATION = gql `
-  mutation PutMutation($lineItemId: Int!, $quant: Int!, $inc: Boolean!) {
-    updateLineItem(id: $lineItemId, quantity: $quant, inc: $inc) {
-      id
-      quantity
-      productId
-      orderId
-    }
-  }
-`;
-
-const POST_ORDER_MUTATION = gql `
-  mutation PostOrderMutation {
-    updateOrder {
-      status
-      id
-
-    }
-  }
-`;
+import { PRODUCTS_QUERY, CART_ITEMS_COUNT, ORDERS_QUERY, POST_MUTATION, DEL_MUTATION, PUT_MUTATION, POST_ORDER_MUTATION } from '../queries'
 
 class Cart extends Component {
   _updateCacheAfterTrade = (store, trade, productId) => {
@@ -68,9 +33,6 @@ class Cart extends Component {
 
     store.writeQuery({ query: POST_ORDER_MUTATION, data });
   }
-
-
-
 
   render() {
     const { history } = this.props;
