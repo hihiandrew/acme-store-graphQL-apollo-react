@@ -30,7 +30,7 @@ class App extends Component {
 
     return (
       <HashRouter>
-        <div>
+        <div className="container">
           <Route path="/" render={renderNavbar} />
           {auth ? (
             <div>

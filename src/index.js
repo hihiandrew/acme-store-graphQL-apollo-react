@@ -9,7 +9,8 @@ import { InMemoryCache } from 'apollo-cache-inmemory';
 export const AUTH_TOKEN = 'token-1806';
 
 const httpLink = createHttpLink({
-  uri: 'http://localhost:8080/graphql',
+  // uri: 'http://localhost:8080/graphql',
+  uri: 'https://f5c3c09755cc4acd97e2d93560e90e54.vfs.cloud9.us-east-1.amazonaws.com/graphql',
 });
 
 const authLink = setContext((_, { headers }) => {

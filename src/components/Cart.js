@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
 import { Query, Mutation } from 'react-apollo';
 import gql from 'graphql-tag';
+import { ORDERS_QUERY } from './Orders';
 
-const PRODUCTS_QUERY = gql`
+export const PRODUCTS_QUERY = gql `
   query {
     products {
       name
@@ -15,13 +16,13 @@ const PRODUCTS_QUERY = gql`
     }
   }
 `;
-const CART_ITEMS_COUNT = gql`
+const CART_ITEMS_COUNT = gql `
   query {
     cartItemsCount
   }
 `;
 
-const POST_MUTATION = gql`
+const POST_MUTATION = gql `
   mutation PostMutation($productId: Int!) {
     createLineItem(productId: $productId) {
       id
@@ -30,12 +31,12 @@ const POST_MUTATION = gql`
     }
   }
 `;
-const DEL_MUTATION = gql`
+const DEL_MUTATION = gql `
   mutation DeleteMutation($lineItemId: Int!) {
     deleteLineItem(id: $lineItemId)
   }
 `;
-const PUT_MUTATION = gql`
+const PUT_MUTATION = gql `
   mutation PutMutation($lineItemId: Int!, $quant: Int!, $inc: Boolean!) {
     updateLineItem(id: $lineItemId, quantity: $quant, inc: $inc) {
       id
@@ -46,11 +47,12 @@ const PUT_MUTATION = gql`
   }
 `;
 
-const POST_ORDER_MUTATION = gql`
+const POST_ORDER_MUTATION = gql `
   mutation PostOrderMutation {
     updateOrder {
-      id
       status
+      id
+
     }
   }
 `;
@@ -64,17 +66,31 @@ class Cart extends Component {
     let tradedProduct = data.products.find(prod => prod.id === productId);
     if (!trade) {
       tradedProduct.lineItems = [];
-    } else {
+    }
+    else {
       if (trade.quantity == 1) {
         //create lineItem
         tradedProduct.lineItems.push(trade);
-      } else {
+      }
+      else {
         //increment/decrement first (and only) lineItem
         tradedProduct.lineItems[0].quantity = trade.quantity;
       }
     }
     store.writeQuery({ query: PRODUCTS_QUERY, data });
   };
+
+  _updateCacheAfterOrder = (store, order, productId) => {
+    const data = store.readQuery({
+      query: POST_ORDER_MUTATION,
+    });
+
+
+    store.writeQuery({ query: POST_ORDER_MUTATION, data });
+  }
+
+
+
 
   render() {
     const { history } = this.props;
@@ -156,6 +172,7 @@ class Cart extends Component {
         <Mutation
           mutation={POST_ORDER_MUTATION}
           onCompleted={() => history.push('/orders')}
+          refetchQueries={[{query: ORDERS_QUERY}]}
         >
           {mutation => (
             <button

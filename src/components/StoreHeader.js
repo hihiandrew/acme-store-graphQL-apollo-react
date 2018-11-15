@@ -2,8 +2,10 @@ import React, { Component } from 'react';
 import { Query, Mutation } from 'react-apollo';
 import gql from 'graphql-tag';
 import { AUTH_TOKEN } from '../index';
+import { ORDERS_QUERY } from './Orders'
+import { PRODUCTS_QUERY } from './Cart'
 
-const LINEITEMS_QUERY = gql`
+const LINEITEMS_QUERY = gql `
   query {
     orders {
       status
@@ -14,7 +16,7 @@ const LINEITEMS_QUERY = gql`
   }
 `;
 
-const RESET_MUTATION = gql`
+const RESET_MUTATION = gql `
   mutation {
     reset
   }
@@ -23,7 +25,7 @@ const RESET_MUTATION = gql`
 class StoreHeader extends Component {
   render() {
     return (
-      <div className="container">
+      <div>
         <p className="alert alert-success">
           <Query query={LINEITEMS_QUERY}>
             {({ loading, error, data }) => {
@@ -46,14 +48,16 @@ class StoreHeader extends Component {
         </p>
         <Mutation
           mutation={RESET_MUTATION}
-          update={store => {
-            const data = store.readQuery({ query: LINEITEMS_QUERY });
-            data.orders = [];
-            store.writeQuery({
-              query: LINEITEMS_QUERY,
-              data,
-            });
-          }}
+          refetchQueries={[{query:LINEITEMS_QUERY},{query:PRODUCTS_QUERY},{query:ORDERS_QUERY}]}
+          // update={store => {
+          //   const data = store.readQuery({ query: LINEITEMS_QUERY });
+          //   console.log(data)
+          //   data.orders = [];
+          //   store.writeQuery({
+          //     query: LINEITEMS_QUERY,
+          //     data,
+          //   });
+          // }}
         >
           {mutation => (
             <button onClick={mutation} className="btn btn-warning">
@@ -61,6 +65,7 @@ class StoreHeader extends Component {
             </button>
           )}
         </Mutation>
+        <br/>
       </div>
     );
   }

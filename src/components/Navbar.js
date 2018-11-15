@@ -4,12 +4,15 @@ import { Query } from 'react-apollo';
 import gql from 'graphql-tag';
 import { AUTH_TOKEN } from '../index';
 
-const ORDERS_COUNT_QUERY = gql`
-  query {
-    ordersCount
+const ORDERS_COUNT_QUERY = gql `
+query{
+  orders(filter: "ORDER"){
+    id
   }
-`;
-const CARTITEMS_COUNT_QUERY = gql`
+}
+`
+
+const CARTITEMS_COUNT_QUERY = gql `
   query {
     cartItemsCount
   }
@@ -69,9 +72,9 @@ class Navbar extends Component {
                 Orders (
                 <Query query={ORDERS_COUNT_QUERY}>
                   {({ loading, error, data }) => {
-                    if (loading) return <div>Loading..</div>;
-                    if (error) return <div>Error</div>;
-                    return data.ordersCount;
+                    // if (loading) return <div>Loading..</div>;
+                    if (loading || error) return <div>Error</div>;
+                    return data.orders.length;
                   }}
                 </Query>
                 )

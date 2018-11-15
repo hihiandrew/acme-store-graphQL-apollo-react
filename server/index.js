@@ -1,7 +1,7 @@
 const express = require('express');
 const app = express();
 const { ApolloServer, gql } = require('apollo-server-express');
-const typeDefs = require('./db/typeDefs');
+const typeDefs = require('./db/typedefs');
 const resolvers = require('./db/resolvers');
 const morgan = require('morgan');
 const bodyParser = require('body-parser');
@@ -32,7 +32,8 @@ app.use((req, res, next) => {
   let id;
   try {
     id = jwt.decode(token, secret).id;
-  } catch (ex) {
+  }
+  catch (ex) {
     return next({ status: 401 });
   }
   User.findById(id)

@@ -1,28 +1,19 @@
 import React, { Component } from 'react';
-import { connect } from 'react-redux';
 
 class OrderRows extends Component {
   render() {
-    const { products, item } = this.props;
+    const { item } = this.props;
+    const { quantity, id } = item
+    const { name } = item.product
     return (
-      <tr key={item.id}>
-        <td>{products.find(p => p.id == item.productId).name}</td>
-        <td>
-          <span className="badge badge-primary">{item.quantity}</span>
-        </td>
-      </tr>
+      <div key={id} className="d-flex justify-content-between">
+        <div>{name}</div>
+        <div className="badge badge-primary">{quantity}</div>
+      </div>
     );
   }
 }
 
-const mapStateToProps = (state, ownProps) => {
-  return {
-    products: state.products,
-    item: ownProps.item,
-  };
-};
 
-export default connect(
-  mapStateToProps,
-  null
-)(OrderRows);
+
+export default OrderRows

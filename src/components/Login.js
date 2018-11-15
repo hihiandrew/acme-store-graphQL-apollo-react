@@ -3,7 +3,7 @@ import { AUTH_TOKEN } from '../index';
 import gql from 'graphql-tag';
 import { Mutation, ApolloConsumer } from 'react-apollo';
 
-const LOGIN_MUTATION = gql`
+const LOGIN_MUTATION = gql `
   mutation LoginMutation($name: String!, $password: String!) {
     login(name: $name, password: $password) {
       token
@@ -13,7 +13,7 @@ const LOGIN_MUTATION = gql`
     }
   }
 `;
-const SIGNUP_MUTATION = gql`
+const SIGNUP_MUTATION = gql `
   mutation SignupMutation($name: String!, $password: String!) {
     signup(name: $name, password: $password) {
       token
