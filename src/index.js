@@ -6,10 +6,11 @@ import { ApolloProvider } from 'react-apollo';
 import { ApolloClient } from 'apollo-client';
 import { setContext } from 'apollo-link-context';
 import { InMemoryCache } from 'apollo-cache-inmemory';
+const PORT = process.env.PORT || 8080;
 export const AUTH_TOKEN = 'token-1806';
 
 const httpLink = createHttpLink({
-  uri: 'http://localhost:8080/graphql',
+  uri: `http://localhost:${PORT}/graphql`,
   // uri: `https://vfs.cloud9.us-east-1.amazonaws.com/graphql`,
 });
 
