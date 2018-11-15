@@ -1,26 +1,7 @@
 import React, { Component } from 'react';
 import { Query, Mutation } from 'react-apollo';
-import gql from 'graphql-tag';
 import { AUTH_TOKEN } from '../index';
-import { ORDERS_QUERY } from './Orders'
-import { PRODUCTS_QUERY } from './Cart'
-
-const LINEITEMS_QUERY = gql `
-  query {
-    orders {
-      status
-      lineItems {
-        quantity
-      }
-    }
-  }
-`;
-
-const RESET_MUTATION = gql `
-  mutation {
-    reset
-  }
-`;
+import { LINEITEMS_QUERY, RESET_MUTATION, ORDERS_QUERY, PRODUCTS_QUERY } from '../queries'
 
 class StoreHeader extends Component {
   render() {

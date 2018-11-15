@@ -1,21 +1,7 @@
 import React, { Component } from 'react';
 import { Query, Mutation } from 'react-apollo';
-import gql from 'graphql-tag';
 import OrderRows from './OrderRows';
-
-export const ORDERS_QUERY = gql `
-query{
-  orders(filter: "ORDER"){
-    id
-    lineItems{
-      quantity
-      product{
-        name
-      }
-    }
-  }
-}
-`
+import { ORDERS_QUERY } from '../queries'
 
 class Orders extends Component {
   render() {

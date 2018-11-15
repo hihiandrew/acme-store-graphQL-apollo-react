@@ -52445,16 +52445,13 @@ exports.default = App;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.PRODUCTS_QUERY = undefined;
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _templateObject = _taggedTemplateLiteral(['\n  query {\n    products {\n      name\n      id\n      lineItems(filter: "CART") {\n        id\n        quantity\n        orderId\n      }\n    }\n  }\n'], ['\n  query {\n    products {\n      name\n      id\n      lineItems(filter: "CART") {\n        id\n        quantity\n        orderId\n      }\n    }\n  }\n']),
-    _templateObject2 = _taggedTemplateLiteral(['\n  query {\n    cartItemsCount\n  }\n'], ['\n  query {\n    cartItemsCount\n  }\n']),
-    _templateObject3 = _taggedTemplateLiteral(['\n  mutation PostMutation($productId: Int!) {\n    createLineItem(productId: $productId) {\n      id\n      quantity\n      orderId\n    }\n  }\n'], ['\n  mutation PostMutation($productId: Int!) {\n    createLineItem(productId: $productId) {\n      id\n      quantity\n      orderId\n    }\n  }\n']),
-    _templateObject4 = _taggedTemplateLiteral(['\n  mutation DeleteMutation($lineItemId: Int!) {\n    deleteLineItem(id: $lineItemId)\n  }\n'], ['\n  mutation DeleteMutation($lineItemId: Int!) {\n    deleteLineItem(id: $lineItemId)\n  }\n']),
-    _templateObject5 = _taggedTemplateLiteral(['\n  mutation PutMutation($lineItemId: Int!, $quant: Int!, $inc: Boolean!) {\n    updateLineItem(id: $lineItemId, quantity: $quant, inc: $inc) {\n      id\n      quantity\n      productId\n      orderId\n    }\n  }\n'], ['\n  mutation PutMutation($lineItemId: Int!, $quant: Int!, $inc: Boolean!) {\n    updateLineItem(id: $lineItemId, quantity: $quant, inc: $inc) {\n      id\n      quantity\n      productId\n      orderId\n    }\n  }\n']),
-    _templateObject6 = _taggedTemplateLiteral(['\n  mutation PostOrderMutation {\n    updateOrder {\n      status\n      id\n\n    }\n  }\n'], ['\n  mutation PostOrderMutation {\n    updateOrder {\n      status\n      id\n\n    }\n  }\n']);
+var _templateObject = _taggedTemplateLiteral(['\n  mutation PostMutation($productId: Int!) {\n    createLineItem(productId: $productId) {\n      id\n      quantity\n      orderId\n    }\n  }\n'], ['\n  mutation PostMutation($productId: Int!) {\n    createLineItem(productId: $productId) {\n      id\n      quantity\n      orderId\n    }\n  }\n']),
+    _templateObject2 = _taggedTemplateLiteral(['\n  mutation DeleteMutation($lineItemId: Int!) {\n    deleteLineItem(id: $lineItemId)\n  }\n'], ['\n  mutation DeleteMutation($lineItemId: Int!) {\n    deleteLineItem(id: $lineItemId)\n  }\n']),
+    _templateObject3 = _taggedTemplateLiteral(['\n  mutation PutMutation($lineItemId: Int!, $quant: Int!, $inc: Boolean!) {\n    updateLineItem(id: $lineItemId, quantity: $quant, inc: $inc) {\n      id\n      quantity\n      productId\n      orderId\n    }\n  }\n'], ['\n  mutation PutMutation($lineItemId: Int!, $quant: Int!, $inc: Boolean!) {\n    updateLineItem(id: $lineItemId, quantity: $quant, inc: $inc) {\n      id\n      quantity\n      productId\n      orderId\n    }\n  }\n']),
+    _templateObject4 = _taggedTemplateLiteral(['\n  mutation PostOrderMutation {\n    updateOrder {\n      status\n      id\n\n    }\n  }\n'], ['\n  mutation PostOrderMutation {\n    updateOrder {\n      status\n      id\n\n    }\n  }\n']);
 
 var _react = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 
@@ -52462,11 +52459,7 @@ var _react2 = _interopRequireDefault(_react);
 
 var _reactApollo = __webpack_require__(/*! react-apollo */ "./node_modules/react-apollo/react-apollo.browser.umd.js");
 
-var _graphqlTag = __webpack_require__(/*! graphql-tag */ "./node_modules/graphql-tag/src/index.js");
-
-var _graphqlTag2 = _interopRequireDefault(_graphqlTag);
-
-var _Orders = __webpack_require__(/*! ./Orders */ "./src/components/Orders.js");
+var _queries = __webpack_require__(/*! ../queries */ "./src/queries.js");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -52478,14 +52471,11 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 function _taggedTemplateLiteral(strings, raw) { return Object.freeze(Object.defineProperties(strings, { raw: { value: Object.freeze(raw) } })); }
 
-var PRODUCTS_QUERY = exports.PRODUCTS_QUERY = (0, _graphqlTag2.default)(_templateObject);
-var CART_ITEMS_COUNT = (0, _graphqlTag2.default)(_templateObject2);
+var POST_MUTATION = gql(_templateObject);
+var DEL_MUTATION = gql(_templateObject2);
+var PUT_MUTATION = gql(_templateObject3);
 
-var POST_MUTATION = (0, _graphqlTag2.default)(_templateObject3);
-var DEL_MUTATION = (0, _graphqlTag2.default)(_templateObject4);
-var PUT_MUTATION = (0, _graphqlTag2.default)(_templateObject5);
-
-var POST_ORDER_MUTATION = (0, _graphqlTag2.default)(_templateObject6);
+var POST_ORDER_MUTATION = gql(_templateObject4);
 
 var Cart = function (_Component) {
   _inherits(Cart, _Component);
@@ -52503,7 +52493,7 @@ var Cart = function (_Component) {
 
     return _ret = (_temp = (_this = _possibleConstructorReturn(this, (_ref = Cart.__proto__ || Object.getPrototypeOf(Cart)).call.apply(_ref, [this].concat(args))), _this), _this._updateCacheAfterTrade = function (store, trade, productId) {
       var data = store.readQuery({
-        query: PRODUCTS_QUERY
+        query: _queries.PRODUCTS_QUERY
       });
       //conditional del as mutation doesnt return quantity, instead we remove it
       var tradedProduct = data.products.find(function (prod) {
@@ -52520,7 +52510,7 @@ var Cart = function (_Component) {
           tradedProduct.lineItems[0].quantity = trade.quantity;
         }
       }
-      store.writeQuery({ query: PRODUCTS_QUERY, data: data });
+      store.writeQuery({ query: _queries.PRODUCTS_QUERY, data: data });
     }, _this._updateCacheAfterOrder = function (store, order, productId) {
       var data = store.readQuery({
         query: POST_ORDER_MUTATION
@@ -52550,7 +52540,7 @@ var Cart = function (_Component) {
           { className: 'row' },
           _react2.default.createElement(
             _reactApollo.Query,
-            { query: PRODUCTS_QUERY },
+            { query: _queries.PRODUCTS_QUERY },
             function (_ref2) {
               var loading = _ref2.loading,
                   error = _ref2.error,
@@ -52658,7 +52648,7 @@ var Cart = function (_Component) {
             onCompleted: function onCompleted() {
               return history.push('/orders');
             },
-            refetchQueries: [{ query: _Orders.ORDERS_QUERY }]
+            refetchQueries: [{ query: _queries.ORDERS_QUERY }]
           },
           function (mutation) {
             return _react2.default.createElement(
@@ -52763,20 +52753,15 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _templateObject = _taggedTemplateLiteral(['\n  mutation LoginMutation($name: String!, $password: String!) {\n    login(name: $name, password: $password) {\n      token\n      user {\n        name\n      }\n    }\n  }\n'], ['\n  mutation LoginMutation($name: String!, $password: String!) {\n    login(name: $name, password: $password) {\n      token\n      user {\n        name\n      }\n    }\n  }\n']),
-    _templateObject2 = _taggedTemplateLiteral(['\n  mutation SignupMutation($name: String!, $password: String!) {\n    signup(name: $name, password: $password) {\n      token\n      user {\n        name\n      }\n    }\n  }\n'], ['\n  mutation SignupMutation($name: String!, $password: String!) {\n    signup(name: $name, password: $password) {\n      token\n      user {\n        name\n      }\n    }\n  }\n']);
-
 var _react = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 
 var _react2 = _interopRequireDefault(_react);
 
 var _index = __webpack_require__(/*! ../index */ "./src/index.js");
 
-var _graphqlTag = __webpack_require__(/*! graphql-tag */ "./node_modules/graphql-tag/src/index.js");
-
-var _graphqlTag2 = _interopRequireDefault(_graphqlTag);
-
 var _reactApollo = __webpack_require__(/*! react-apollo */ "./node_modules/react-apollo/react-apollo.browser.umd.js");
+
+var _queries = __webpack_require__(/*! ../queries */ "./src/queries.js");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -52787,11 +52772,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-function _taggedTemplateLiteral(strings, raw) { return Object.freeze(Object.defineProperties(strings, { raw: { value: Object.freeze(raw) } })); }
-
-var LOGIN_MUTATION = (0, _graphqlTag2.default)(_templateObject);
-var SIGNUP_MUTATION = (0, _graphqlTag2.default)(_templateObject2);
 
 var Login = function (_Component) {
   _inherits(Login, _Component);
@@ -52861,7 +52841,7 @@ var Login = function (_Component) {
             return _react2.default.createElement(
               _reactApollo.Mutation,
               {
-                mutation: login ? LOGIN_MUTATION : SIGNUP_MUTATION,
+                mutation: login ? _queries.LOGIN_MUTATION : _queries.SIGNUP_MUTATION,
                 variables: { name: name, password: password },
                 onCompleted: function onCompleted(data) {
                   var _ref2 = login ? data.login : data.signup,
@@ -52919,9 +52899,6 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _templateObject = _taggedTemplateLiteral(['\nquery{\n  orders(filter: "ORDER"){\n    id\n  }\n}\n'], ['\nquery{\n  orders(filter: "ORDER"){\n    id\n  }\n}\n']),
-    _templateObject2 = _taggedTemplateLiteral(['\n  query {\n    cartItemsCount\n  }\n'], ['\n  query {\n    cartItemsCount\n  }\n']);
-
 var _react = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 
 var _react2 = _interopRequireDefault(_react);
@@ -52930,11 +52907,9 @@ var _reactRouterDom = __webpack_require__(/*! react-router-dom */ "./node_module
 
 var _reactApollo = __webpack_require__(/*! react-apollo */ "./node_modules/react-apollo/react-apollo.browser.umd.js");
 
-var _graphqlTag = __webpack_require__(/*! graphql-tag */ "./node_modules/graphql-tag/src/index.js");
-
-var _graphqlTag2 = _interopRequireDefault(_graphqlTag);
-
 var _index = __webpack_require__(/*! ../index */ "./src/index.js");
+
+var _queries = __webpack_require__(/*! ../queries */ "./src/queries.js");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -52943,20 +52918,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-function _taggedTemplateLiteral(strings, raw) { return Object.freeze(Object.defineProperties(strings, { raw: { value: Object.freeze(raw) } })); }
-
-var ORDERS_COUNT_QUERY = (0, _graphqlTag2.default)(_templateObject);
-
-var CARTITEMS_COUNT_QUERY = (0, _graphqlTag2.default)(_templateObject2);
-
-// const AUTH_USER_QUERY = gql`
-//   query {
-//     authUser @client {
-//       name
-//     }
-//   }
-// `;
 
 var Navbar = function (_Component) {
   _inherits(Navbar, _Component);
@@ -53018,7 +52979,7 @@ var Navbar = function (_Component) {
                 'Cart (',
                 _react2.default.createElement(
                   _reactApollo.Query,
-                  { query: CARTITEMS_COUNT_QUERY },
+                  { query: _queries.CARTITEMS_COUNT_QUERY },
                   function (_ref) {
                     var loading = _ref.loading,
                         error = _ref.error,
@@ -53049,7 +53010,7 @@ var Navbar = function (_Component) {
                 'Orders (',
                 _react2.default.createElement(
                   _reactApollo.Query,
-                  { query: ORDERS_COUNT_QUERY },
+                  { query: _queries.ORDERS_COUNT_QUERY },
                   function (_ref2) {
                     var loading = _ref2.loading,
                         error = _ref2.error,
@@ -53178,11 +53139,8 @@ exports.default = OrderRows;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.ORDERS_QUERY = undefined;
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _templateObject = _taggedTemplateLiteral(['\nquery{\n  orders(filter: "ORDER"){\n    id\n    lineItems{\n      quantity\n      product{\n        name\n      }\n    }\n  }\n}\n'], ['\nquery{\n  orders(filter: "ORDER"){\n    id\n    lineItems{\n      quantity\n      product{\n        name\n      }\n    }\n  }\n}\n']);
 
 var _react = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 
@@ -53190,13 +53148,11 @@ var _react2 = _interopRequireDefault(_react);
 
 var _reactApollo = __webpack_require__(/*! react-apollo */ "./node_modules/react-apollo/react-apollo.browser.umd.js");
 
-var _graphqlTag = __webpack_require__(/*! graphql-tag */ "./node_modules/graphql-tag/src/index.js");
-
-var _graphqlTag2 = _interopRequireDefault(_graphqlTag);
-
 var _OrderRows = __webpack_require__(/*! ./OrderRows */ "./src/components/OrderRows.js");
 
 var _OrderRows2 = _interopRequireDefault(_OrderRows);
+
+var _queries = __webpack_require__(/*! ../queries */ "./src/queries.js");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -53205,10 +53161,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-function _taggedTemplateLiteral(strings, raw) { return Object.freeze(Object.defineProperties(strings, { raw: { value: Object.freeze(raw) } })); }
-
-var ORDERS_QUERY = exports.ORDERS_QUERY = (0, _graphqlTag2.default)(_templateObject);
 
 var Orders = function (_Component) {
   _inherits(Orders, _Component);
@@ -53232,7 +53184,7 @@ var Orders = function (_Component) {
         ),
         _react2.default.createElement(
           _reactApollo.Query,
-          { query: ORDERS_QUERY },
+          { query: _queries.ORDERS_QUERY },
           function (_ref) {
             var loading = _ref.loading,
                 error = _ref.error,
@@ -53311,24 +53263,15 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _templateObject = _taggedTemplateLiteral(['\n  query {\n    orders {\n      status\n      lineItems {\n        quantity\n      }\n    }\n  }\n'], ['\n  query {\n    orders {\n      status\n      lineItems {\n        quantity\n      }\n    }\n  }\n']),
-    _templateObject2 = _taggedTemplateLiteral(['\n  mutation {\n    reset\n  }\n'], ['\n  mutation {\n    reset\n  }\n']);
-
 var _react = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 
 var _react2 = _interopRequireDefault(_react);
 
 var _reactApollo = __webpack_require__(/*! react-apollo */ "./node_modules/react-apollo/react-apollo.browser.umd.js");
 
-var _graphqlTag = __webpack_require__(/*! graphql-tag */ "./node_modules/graphql-tag/src/index.js");
-
-var _graphqlTag2 = _interopRequireDefault(_graphqlTag);
-
 var _index = __webpack_require__(/*! ../index */ "./src/index.js");
 
-var _Orders = __webpack_require__(/*! ./Orders */ "./src/components/Orders.js");
-
-var _Cart = __webpack_require__(/*! ./Cart */ "./src/components/Cart.js");
+var _queries = __webpack_require__(/*! ../queries */ "./src/queries.js");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -53337,12 +53280,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-function _taggedTemplateLiteral(strings, raw) { return Object.freeze(Object.defineProperties(strings, { raw: { value: Object.freeze(raw) } })); }
-
-var LINEITEMS_QUERY = (0, _graphqlTag2.default)(_templateObject);
-
-var RESET_MUTATION = (0, _graphqlTag2.default)(_templateObject2);
 
 var StoreHeader = function (_Component) {
   _inherits(StoreHeader, _Component);
@@ -53364,7 +53301,7 @@ var StoreHeader = function (_Component) {
           { className: 'alert alert-success' },
           _react2.default.createElement(
             _reactApollo.Query,
-            { query: LINEITEMS_QUERY },
+            { query: _queries.LINEITEMS_QUERY },
             function (_ref) {
               var loading = _ref.loading,
                   error = _ref.error,
@@ -53389,8 +53326,8 @@ var StoreHeader = function (_Component) {
         _react2.default.createElement(
           _reactApollo.Mutation,
           {
-            mutation: RESET_MUTATION,
-            refetchQueries: [{ query: LINEITEMS_QUERY }, { query: _Cart.PRODUCTS_QUERY }, { query: _Orders.ORDERS_QUERY }]
+            mutation: _queries.RESET_MUTATION,
+            refetchQueries: [{ query: _queries.LINEITEMS_QUERY }, { query: _queries.PRODUCTS_QUERY }, { query: _queries.ORDERS_QUERY }]
             // update={store => {
             //   const data = store.readQuery({ query: LINEITEMS_QUERY });
             //   console.log(data)
@@ -53489,6 +53426,60 @@ var client = new _apolloClient.ApolloClient({
   { client: client },
   _react2.default.createElement(_App2.default, null)
 ), document.getElementById('root'));
+
+/***/ }),
+
+/***/ "./src/queries.js":
+/*!************************!*\
+  !*** ./src/queries.js ***!
+  \************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.ORDERS_QUERY = exports.SIGNUP_MUTATION = exports.LOGIN_MUTATION = exports.PRODUCTS_QUERY = exports.RESET_MUTATION = exports.LINEITEMS_QUERY = exports.CARTITEMS_COUNT_QUERY = exports.ORDERS_COUNT_QUERY = undefined;
+
+var _templateObject = _taggedTemplateLiteral(['\nquery{\n  orders(filter: "ORDER"){\n    id\n  }\n}\n'], ['\nquery{\n  orders(filter: "ORDER"){\n    id\n  }\n}\n']),
+    _templateObject2 = _taggedTemplateLiteral(['\n  query {\n    cartItemsCount\n  }\n'], ['\n  query {\n    cartItemsCount\n  }\n']),
+    _templateObject3 = _taggedTemplateLiteral(['\n  query {\n    orders {\n      status\n      lineItems {\n        quantity\n      }\n    }\n  }\n'], ['\n  query {\n    orders {\n      status\n      lineItems {\n        quantity\n      }\n    }\n  }\n']),
+    _templateObject4 = _taggedTemplateLiteral(['\n  mutation {\n    reset\n  }\n'], ['\n  mutation {\n    reset\n  }\n']),
+    _templateObject5 = _taggedTemplateLiteral(['\n  query {\n    products {\n      name\n      id\n      lineItems(filter: "CART") {\n        id\n        quantity\n        orderId\n      }\n    }\n  }\n'], ['\n  query {\n    products {\n      name\n      id\n      lineItems(filter: "CART") {\n        id\n        quantity\n        orderId\n      }\n    }\n  }\n']),
+    _templateObject6 = _taggedTemplateLiteral(['\n  mutation LoginMutation($name: String!, $password: String!) {\n    login(name: $name, password: $password) {\n      token\n      user {\n        name\n      }\n    }\n  }\n'], ['\n  mutation LoginMutation($name: String!, $password: String!) {\n    login(name: $name, password: $password) {\n      token\n      user {\n        name\n      }\n    }\n  }\n']),
+    _templateObject7 = _taggedTemplateLiteral(['\n  mutation SignupMutation($name: String!, $password: String!) {\n    signup(name: $name, password: $password) {\n      token\n      user {\n        name\n      }\n    }\n  }\n'], ['\n  mutation SignupMutation($name: String!, $password: String!) {\n    signup(name: $name, password: $password) {\n      token\n      user {\n        name\n      }\n    }\n  }\n']),
+    _templateObject8 = _taggedTemplateLiteral(['\nquery{\n  orders(filter: "ORDER"){\n    id\n    lineItems{\n      quantity\n      product{\n        name\n      }\n    }\n  }\n}\n'], ['\nquery{\n  orders(filter: "ORDER"){\n    id\n    lineItems{\n      quantity\n      product{\n        name\n      }\n    }\n  }\n}\n']);
+
+var _graphqlTag = __webpack_require__(/*! graphql-tag */ "./node_modules/graphql-tag/src/index.js");
+
+var _graphqlTag2 = _interopRequireDefault(_graphqlTag);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _taggedTemplateLiteral(strings, raw) { return Object.freeze(Object.defineProperties(strings, { raw: { value: Object.freeze(raw) } })); }
+
+//navbar
+var ORDERS_COUNT_QUERY = exports.ORDERS_COUNT_QUERY = (0, _graphqlTag2.default)(_templateObject);
+
+var CARTITEMS_COUNT_QUERY = exports.CARTITEMS_COUNT_QUERY = (0, _graphqlTag2.default)(_templateObject2);
+
+//store header
+var LINEITEMS_QUERY = exports.LINEITEMS_QUERY = (0, _graphqlTag2.default)(_templateObject3);
+var RESET_MUTATION = exports.RESET_MUTATION = (0, _graphqlTag2.default)(_templateObject4);
+
+//cart
+var PRODUCTS_QUERY = exports.PRODUCTS_QUERY = (0, _graphqlTag2.default)(_templateObject5);
+var CART_ITEMS_COUNT = (0, _graphqlTag2.default)(_templateObject2);
+
+//login
+var LOGIN_MUTATION = exports.LOGIN_MUTATION = (0, _graphqlTag2.default)(_templateObject6);
+var SIGNUP_MUTATION = exports.SIGNUP_MUTATION = (0, _graphqlTag2.default)(_templateObject7);
+
+//orders
+var ORDERS_QUERY = exports.ORDERS_QUERY = (0, _graphqlTag2.default)(_templateObject8);
 
 /***/ }),
 

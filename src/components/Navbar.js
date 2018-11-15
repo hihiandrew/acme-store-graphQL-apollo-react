@@ -1,30 +1,9 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import { Query } from 'react-apollo';
-import gql from 'graphql-tag';
 import { AUTH_TOKEN } from '../index';
+import { ORDERS_COUNT_QUERY, CARTITEMS_COUNT_QUERY } from '../queries'
 
-const ORDERS_COUNT_QUERY = gql `
-query{
-  orders(filter: "ORDER"){
-    id
-  }
-}
-`
-
-const CARTITEMS_COUNT_QUERY = gql `
-  query {
-    cartItemsCount
-  }
-`;
-
-// const AUTH_USER_QUERY = gql`
-//   query {
-//     authUser @client {
-//       name
-//     }
-//   }
-// `;
 
 class Navbar extends Component {
   render() {

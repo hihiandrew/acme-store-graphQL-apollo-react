@@ -1,26 +1,6 @@
 import React, { Component } from 'react';
 import { Query, Mutation } from 'react-apollo';
-import gql from 'graphql-tag';
-import { ORDERS_QUERY } from './Orders';
-
-export const PRODUCTS_QUERY = gql `
-  query {
-    products {
-      name
-      id
-      lineItems(filter: "CART") {
-        id
-        quantity
-        orderId
-      }
-    }
-  }
-`;
-const CART_ITEMS_COUNT = gql `
-  query {
-    cartItemsCount
-  }
-`;
+import { PRODUCTS_QUERY, CART_ITEMS_COUNT, ORDERS_QUERY } from '../queries'
 
 const POST_MUTATION = gql `
   mutation PostMutation($productId: Int!) {

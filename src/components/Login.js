@@ -1,28 +1,7 @@
 import React, { Component } from 'react';
 import { AUTH_TOKEN } from '../index';
-import gql from 'graphql-tag';
 import { Mutation, ApolloConsumer } from 'react-apollo';
-
-const LOGIN_MUTATION = gql `
-  mutation LoginMutation($name: String!, $password: String!) {
-    login(name: $name, password: $password) {
-      token
-      user {
-        name
-      }
-    }
-  }
-`;
-const SIGNUP_MUTATION = gql `
-  mutation SignupMutation($name: String!, $password: String!) {
-    signup(name: $name, password: $password) {
-      token
-      user {
-        name
-      }
-    }
-  }
-`;
+import { LOGIN_MUTATION, SIGNUP_MUTATION } from '../queries'
 
 class Login extends Component {
   constructor() {
