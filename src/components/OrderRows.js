@@ -1,19 +1,14 @@
-import React, { Component } from 'react';
+import React from 'react';
 
-class OrderRows extends Component {
-  render() {
-    const { item } = this.props;
-    const { quantity, id } = item
-    const { name } = item.product
-    return (
-      <div key={id} className="d-flex justify-content-between">
-        <div>{name}</div>
-        <div className="badge badge-primary">{quantity}</div>
-      </div>
-    );
-  }
-}
+const OrderRows = ({ item }) => {
+  const { quantity, id } = item;
+  const { name } = item.product;
+  return (
+    <div key={id} className="d-flex justify-content-between">
+      <div>{name}</div>
+      <div className="badge badge-primary">{quantity}</div>
+    </div>
+  );
+};
 
-
-
-export default OrderRows
+export default OrderRows;

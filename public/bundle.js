@@ -52395,7 +52395,6 @@ var App = function (_Component) {
 
         return _react2.default.createElement(_Cart2.default, { history: history });
       };
-
       return _react2.default.createElement(
         _reactRouterDom.HashRouter,
         null,
@@ -52415,10 +52414,7 @@ var App = function (_Component) {
             'div',
             null,
             _react2.default.createElement(_reactRouterDom.Route, { path: '/', render: renderLogin }),
-            'Please login to access Acme Store. Try:',
-            ' ',
-            'moe : moe, larry : larry',
-            '.'
+            'Please login to access Acme Store. Try moe : moe, larry : larry.'
           )
         )
       );
@@ -52768,10 +52764,6 @@ var Login = function (_Component) {
 
     var _this = _possibleConstructorReturn(this, (Login.__proto__ || Object.getPrototypeOf(Login)).call(this));
 
-    _this.saveUserData = function (token) {
-      localStorage.setItem(_index.AUTH_TOKEN, token);
-    };
-
     _this.handleChange = function (e) {
       _this.setState(_defineProperty({}, e.target.name, e.target.value));
     };
@@ -52783,7 +52775,7 @@ var Login = function (_Component) {
       var _ref = login ? data.login : data.signup,
           token = _ref.token;
 
-      _this.saveUserData(token);
+      localStorage.setItem(_index.AUTH_TOKEN, token);
       history.push('/');
     };
 
@@ -52833,8 +52825,6 @@ var Login = function (_Component) {
                 onCompleted: function onCompleted(data) {
                   var _ref2 = login ? data.login : data.signup,
                       user = _ref2.user;
-                  // console.log('client.write', user);
-
 
                   client.writeData({ data: { authUser: user } });
                   handleSave(data);
@@ -52957,7 +52947,7 @@ var Navbar = function (_Component) {
                 'Home'
               )
             ),
-            _react2.default.createElement(
+            auth && _react2.default.createElement(
               'li',
               { className: path == 'cart' ? 'nav-item active' : 'nav-item' },
               _react2.default.createElement(
@@ -52966,7 +52956,10 @@ var Navbar = function (_Component) {
                 'Cart (',
                 _react2.default.createElement(
                   _reactApollo.Query,
-                  { query: _queries.CARTITEMS_COUNT_QUERY },
+                  {
+                    query: _queries.ITEMS_FILTER_QUERY,
+                    variables: { filter: 'CART' }
+                  },
                   function (_ref) {
                     var loading = _ref.loading,
                         error = _ref.error,
@@ -52982,13 +52975,17 @@ var Navbar = function (_Component) {
                       null,
                       'Error'
                     );
-                    return data.cartItemsCount;
+                    var lineItems = data.lineItems;
+
+                    return lineItems.reduce(function (sum, i) {
+                      return sum + i.quantity;
+                    }, 0);
                   }
                 ),
                 ')'
               )
             ),
-            _react2.default.createElement(
+            auth && _react2.default.createElement(
               'li',
               { className: path == 'orders' ? 'nav-item active' : 'nav-item' },
               _react2.default.createElement(
@@ -53003,8 +53000,12 @@ var Navbar = function (_Component) {
                         error = _ref2.error,
                         data = _ref2.data;
 
-                    // if (loading) return <div>Loading..</div>;
-                    if (loading || error) return _react2.default.createElement(
+                    if (loading) return _react2.default.createElement(
+                      'div',
+                      null,
+                      'Loading..'
+                    );
+                    if (error) return _react2.default.createElement(
                       'div',
                       null,
                       'Error'
@@ -53021,14 +53022,7 @@ var Navbar = function (_Component) {
               _react2.default.createElement(
                 _reactRouterDom.Link,
                 { to: auth ? '/logout' : '/login', className: 'nav-link' },
-                auth ? 'Logout (temp)' : // ${(<Query query={AUTH_USER_QUERY}>
-                //       {({ data }) => {
-                //         console.log('navbar', data.authUser);
-                //         return authUser;
-                //       }}
-                //     </Query>
-                //     )}
-                'Login'
+                auth ? 'Logout ({(\n                      <Query query={AUTH_USER_QUERY}>\n                        {({ data }) => {\n                          if (loading) return <div>Loading..</div>;\n                          if (error) return <div>Error</div>;\n                          console.log(data);\n                          return;\n                        }}\n                      </Query>\n                    )})' : 'Login'
               )
             )
           )
@@ -53041,6 +53035,66 @@ var Navbar = function (_Component) {
 }(_react.Component);
 
 exports.default = Navbar;
+
+/***/ }),
+
+/***/ "./src/components/OrderCards.js":
+/*!**************************************!*\
+  !*** ./src/components/OrderCards.js ***!
+  \**************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _react = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+
+var _react2 = _interopRequireDefault(_react);
+
+var _OrderRows = __webpack_require__(/*! ./OrderRows */ "./src/components/OrderRows.js");
+
+var _OrderRows2 = _interopRequireDefault(_OrderRows);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var OrderCards = function OrderCards(_ref) {
+  var ord = _ref.ord;
+
+  return _react2.default.createElement(
+    'div',
+    { key: ord.id },
+    _react2.default.createElement(
+      'div',
+      { className: 'card' },
+      _react2.default.createElement(
+        'div',
+        { className: 'card-body' },
+        _react2.default.createElement(
+          'div',
+          { className: 'card-title' },
+          '#',
+          ord.id
+        ),
+        ord.lineItems.map(function (item) {
+          return _react2.default.createElement(
+            'div',
+            { className: 'card-text', key: item.id },
+            _react2.default.createElement('br', null),
+            _react2.default.createElement(_OrderRows2.default, { item: item })
+          );
+        })
+      )
+    ),
+    _react2.default.createElement('br', null)
+  );
+};
+
+exports.default = OrderCards;
 
 /***/ }),
 
@@ -53058,56 +53112,33 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
 var _react = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 
 var _react2 = _interopRequireDefault(_react);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+var OrderRows = function OrderRows(_ref) {
+  var item = _ref.item;
+  var quantity = item.quantity,
+      id = item.id;
+  var name = item.product.name;
 
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var OrderRows = function (_Component) {
-  _inherits(OrderRows, _Component);
-
-  function OrderRows() {
-    _classCallCheck(this, OrderRows);
-
-    return _possibleConstructorReturn(this, (OrderRows.__proto__ || Object.getPrototypeOf(OrderRows)).apply(this, arguments));
-  }
-
-  _createClass(OrderRows, [{
-    key: "render",
-    value: function render() {
-      var item = this.props.item;
-      var quantity = item.quantity,
-          id = item.id;
-      var name = item.product.name;
-
-      return _react2.default.createElement(
-        "div",
-        { key: id, className: "d-flex justify-content-between" },
-        _react2.default.createElement(
-          "div",
-          null,
-          name
-        ),
-        _react2.default.createElement(
-          "div",
-          { className: "badge badge-primary" },
-          quantity
-        )
-      );
-    }
-  }]);
-
-  return OrderRows;
-}(_react.Component);
+  return _react2.default.createElement(
+    "div",
+    { key: id, className: "d-flex justify-content-between" },
+    _react2.default.createElement(
+      "div",
+      null,
+      name
+    ),
+    _react2.default.createElement(
+      "div",
+      { className: "badge badge-primary" },
+      quantity
+    )
+  );
+};
 
 exports.default = OrderRows;
 
@@ -53135,9 +53166,9 @@ var _react2 = _interopRequireDefault(_react);
 
 var _reactApollo = __webpack_require__(/*! react-apollo */ "./node_modules/react-apollo/react-apollo.browser.umd.js");
 
-var _OrderRows = __webpack_require__(/*! ./OrderRows */ "./src/components/OrderRows.js");
+var _OrderCards = __webpack_require__(/*! ./OrderCards */ "./src/components/OrderCards.js");
 
-var _OrderRows2 = _interopRequireDefault(_OrderRows);
+var _OrderCards2 = _interopRequireDefault(_OrderCards);
 
 var _queries = __webpack_require__(/*! ../queries */ "./src/queries.js");
 
@@ -53193,33 +53224,7 @@ var Orders = function (_Component) {
               'No orders .. yet!'
             );
             return data.orders.map(function (ord) {
-              return _react2.default.createElement(
-                'div',
-                null,
-                _react2.default.createElement(
-                  'div',
-                  { className: 'card', key: ord.id },
-                  _react2.default.createElement(
-                    'div',
-                    { className: 'card-body' },
-                    _react2.default.createElement(
-                      'div',
-                      { className: 'card-title' },
-                      '#',
-                      ord.id
-                    ),
-                    ord.lineItems.map(function (item) {
-                      return _react2.default.createElement(
-                        'div',
-                        { className: 'card-text' },
-                        _react2.default.createElement('br', null),
-                        _react2.default.createElement(_OrderRows2.default, { item: item, key: item.id })
-                      );
-                    })
-                  )
-                ),
-                _react2.default.createElement('br', null)
-              );
+              return _react2.default.createElement(_OrderCards2.default, { ord: ord, key: ord.id });
             });
           }
         )
@@ -53288,7 +53293,7 @@ var StoreHeader = function (_Component) {
           { className: 'alert alert-success' },
           _react2.default.createElement(
             _reactApollo.Query,
-            { query: _queries.LINEITEMS_QUERY },
+            { query: _queries.ITEMS_FILTER_QUERY, variables: { filter: 'ORDER' } },
             function (_ref) {
               var loading = _ref.loading,
                   error = _ref.error,
@@ -53296,27 +53301,22 @@ var StoreHeader = function (_Component) {
 
               if (loading) return 'Loading..';
               if (error) return 'Error';
-              var ordered = data.orders.filter(function (o) {
-                return o.status == 'ORDER';
-              });
-              var soldItems = ordered.reduce(function (init, curr) {
-                return init + curr.lineItems.reduce(function (init, curr) {
-                  return init + curr.quantity;
-                }, 0);
+              var lineItems = data.lineItems;
+
+              return lineItems.reduce(function (sum, i) {
+                return sum + i.quantity;
               }, 0);
-              return soldItems;
             }
           ),
-          ' ',
-          'items sold!'
+          ' items sold!'
         ),
         _react2.default.createElement(
           _reactApollo.Mutation,
           {
             mutation: _queries.RESET_MUTATION,
-            refetchQueries: [{ query: _queries.LINEITEMS_QUERY }, { query: _queries.PRODUCTS_QUERY }, { query: _queries.ORDERS_QUERY }]
+            refetchQueries: [{ query: _queries.ITEMS_FILTER_QUERY }, { query: _queries.PRODUCTS_QUERY }, { query: _queries.ORDERS_QUERY }]
             // update={store => {
-            //   const data = store.readQuery({ query: LINEITEMS_QUERY });
+            //   const data = store.readQuery({ query: ITEMS_FILTER_QUERY });
             //   console.log(data)
             //   data.orders = [];
             //   store.writeQuery({
@@ -53353,7 +53353,7 @@ exports.default = StoreHeader;
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-
+/* WEBPACK VAR INJECTION */(function(process) {
 
 Object.defineProperty(exports, "__esModule", {
   value: true
@@ -53384,10 +53384,11 @@ var _apolloCacheInmemory = __webpack_require__(/*! apollo-cache-inmemory */ "./n
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+var PORT = process.env.PORT || 8080;
 var AUTH_TOKEN = exports.AUTH_TOKEN = 'token-1806';
 
 var httpLink = (0, _apolloLinkHttp.createHttpLink)({
-  uri: 'http://localhost:8080/graphql'
+  uri: 'http://localhost:' + PORT + '/graphql'
   // uri: `https://vfs.cloud9.us-east-1.amazonaws.com/graphql`,
 });
 
@@ -53413,6 +53414,7 @@ var client = new _apolloClient.ApolloClient({
   { client: client },
   _react2.default.createElement(_App2.default, null)
 ), document.getElementById('root'));
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../node_modules/process/browser.js */ "./node_modules/process/browser.js")))
 
 /***/ }),
 
@@ -53429,20 +53431,20 @@ var client = new _apolloClient.ApolloClient({
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.ORDERS_QUERY = exports.SIGNUP_MUTATION = exports.LOGIN_MUTATION = exports.POST_ORDER_MUTATION = exports.PUT_MUTATION = exports.DEL_MUTATION = exports.POST_MUTATION = exports.PRODUCTS_QUERY = exports.RESET_MUTATION = exports.LINEITEMS_QUERY = exports.CARTITEMS_COUNT_QUERY = exports.ORDERS_COUNT_QUERY = undefined;
+exports.ORDERS_QUERY = exports.SIGNUP_MUTATION = exports.LOGIN_MUTATION = exports.POST_ORDER_MUTATION = exports.PUT_MUTATION = exports.DEL_MUTATION = exports.POST_MUTATION = exports.PRODUCTS_QUERY = exports.RESET_MUTATION = exports.LINEITEMS_QUERY = exports.ITEMS_FILTER_QUERY = exports.ORDERS_COUNT_QUERY = undefined;
 
-var _templateObject = _taggedTemplateLiteral(['\nquery{\n  orders(filter: "ORDER"){\n    id\n  }\n}\n'], ['\nquery{\n  orders(filter: "ORDER"){\n    id\n  }\n}\n']),
-    _templateObject2 = _taggedTemplateLiteral(['\n  query {\n    cartItemsCount\n  }\n'], ['\n  query {\n    cartItemsCount\n  }\n']),
-    _templateObject3 = _taggedTemplateLiteral(['\n  query {\n    orders {\n      status\n      lineItems {\n        quantity\n      }\n    }\n  }\n'], ['\n  query {\n    orders {\n      status\n      lineItems {\n        quantity\n      }\n    }\n  }\n']),
+var _templateObject = _taggedTemplateLiteral(['\n  query {\n    orders(filter: "ORDER") {\n      id\n    }\n  }\n'], ['\n  query {\n    orders(filter: "ORDER") {\n      id\n    }\n  }\n']),
+    _templateObject2 = _taggedTemplateLiteral(['\n  query ItemsFilteredCount($filter: String) {\n    lineItems(filter: $filter) {\n      id\n      quantity\n    }\n  }\n'], ['\n  query ItemsFilteredCount($filter: String) {\n    lineItems(filter: $filter) {\n      id\n      quantity\n    }\n  }\n']),
+    _templateObject3 = _taggedTemplateLiteral(['\n  query {\n    orders {\n      id\n      status\n      lineItems {\n        quantity\n      }\n    }\n  }\n'], ['\n  query {\n    orders {\n      id\n      status\n      lineItems {\n        quantity\n      }\n    }\n  }\n']),
     _templateObject4 = _taggedTemplateLiteral(['\n  mutation {\n    reset\n  }\n'], ['\n  mutation {\n    reset\n  }\n']),
     _templateObject5 = _taggedTemplateLiteral(['\n  query {\n    products {\n      name\n      id\n      lineItems(filter: "CART") {\n        id\n        quantity\n        orderId\n      }\n    }\n  }\n'], ['\n  query {\n    products {\n      name\n      id\n      lineItems(filter: "CART") {\n        id\n        quantity\n        orderId\n      }\n    }\n  }\n']),
     _templateObject6 = _taggedTemplateLiteral(['\n  mutation PostMutation($productId: Int!) {\n    createLineItem(productId: $productId) {\n      id\n      quantity\n      orderId\n    }\n  }\n'], ['\n  mutation PostMutation($productId: Int!) {\n    createLineItem(productId: $productId) {\n      id\n      quantity\n      orderId\n    }\n  }\n']),
     _templateObject7 = _taggedTemplateLiteral(['\n  mutation DeleteMutation($lineItemId: Int!) {\n    deleteLineItem(id: $lineItemId)\n  }\n'], ['\n  mutation DeleteMutation($lineItemId: Int!) {\n    deleteLineItem(id: $lineItemId)\n  }\n']),
     _templateObject8 = _taggedTemplateLiteral(['\n  mutation PutMutation($lineItemId: Int!, $quant: Int!, $inc: Boolean!) {\n    updateLineItem(id: $lineItemId, quantity: $quant, inc: $inc) {\n      id\n      quantity\n      productId\n      orderId\n    }\n  }\n'], ['\n  mutation PutMutation($lineItemId: Int!, $quant: Int!, $inc: Boolean!) {\n    updateLineItem(id: $lineItemId, quantity: $quant, inc: $inc) {\n      id\n      quantity\n      productId\n      orderId\n    }\n  }\n']),
-    _templateObject9 = _taggedTemplateLiteral(['\n  mutation PostOrderMutation {\n    updateOrder {\n      status\n      id\n\n    }\n  }\n'], ['\n  mutation PostOrderMutation {\n    updateOrder {\n      status\n      id\n\n    }\n  }\n']),
+    _templateObject9 = _taggedTemplateLiteral(['\n  mutation PostOrderMutation {\n    updateOrder {\n      status\n      id\n    }\n  }\n'], ['\n  mutation PostOrderMutation {\n    updateOrder {\n      status\n      id\n    }\n  }\n']),
     _templateObject10 = _taggedTemplateLiteral(['\n  mutation LoginMutation($name: String!, $password: String!) {\n    login(name: $name, password: $password) {\n      token\n      user {\n        name\n      }\n    }\n  }\n'], ['\n  mutation LoginMutation($name: String!, $password: String!) {\n    login(name: $name, password: $password) {\n      token\n      user {\n        name\n      }\n    }\n  }\n']),
     _templateObject11 = _taggedTemplateLiteral(['\n  mutation SignupMutation($name: String!, $password: String!) {\n    signup(name: $name, password: $password) {\n      token\n      user {\n        name\n      }\n    }\n  }\n'], ['\n  mutation SignupMutation($name: String!, $password: String!) {\n    signup(name: $name, password: $password) {\n      token\n      user {\n        name\n      }\n    }\n  }\n']),
-    _templateObject12 = _taggedTemplateLiteral(['\nquery{\n  orders(filter: "ORDER"){\n    id\n    lineItems{\n      quantity\n      product{\n        name\n      }\n    }\n  }\n}\n'], ['\nquery{\n  orders(filter: "ORDER"){\n    id\n    lineItems{\n      quantity\n      product{\n        name\n      }\n    }\n  }\n}\n']);
+    _templateObject12 = _taggedTemplateLiteral(['\n  query {\n    orders(filter: "ORDER") {\n      id\n      lineItems {\n        id\n        quantity\n        product {\n          name\n        }\n      }\n    }\n  }\n'], ['\n  query {\n    orders(filter: "ORDER") {\n      id\n      lineItems {\n        id\n        quantity\n        product {\n          name\n        }\n      }\n    }\n  }\n']);
 
 var _graphqlTag = __webpack_require__(/*! graphql-tag */ "./node_modules/graphql-tag/src/index.js");
 
@@ -53452,10 +53454,20 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function _taggedTemplateLiteral(strings, raw) { return Object.freeze(Object.defineProperties(strings, { raw: { value: Object.freeze(raw) } })); }
 
+//login
+// export const AUTH_USER_QUERY = gql`
+//   query {
+//     user @client {
+//       id
+//       name
+//     }
+//   }
+// `;
+
 //navbar
 var ORDERS_COUNT_QUERY = exports.ORDERS_COUNT_QUERY = (0, _graphqlTag2.default)(_templateObject);
 
-var CARTITEMS_COUNT_QUERY = exports.CARTITEMS_COUNT_QUERY = (0, _graphqlTag2.default)(_templateObject2);
+var ITEMS_FILTER_QUERY = exports.ITEMS_FILTER_QUERY = (0, _graphqlTag2.default)(_templateObject2);
 
 //store header
 var LINEITEMS_QUERY = exports.LINEITEMS_QUERY = (0, _graphqlTag2.default)(_templateObject3);
@@ -53463,7 +53475,6 @@ var RESET_MUTATION = exports.RESET_MUTATION = (0, _graphqlTag2.default)(_templat
 
 //cart
 var PRODUCTS_QUERY = exports.PRODUCTS_QUERY = (0, _graphqlTag2.default)(_templateObject5);
-var CART_ITEMS_COUNT = (0, _graphqlTag2.default)(_templateObject2);
 
 //cart?
 var POST_MUTATION = exports.POST_MUTATION = (0, _graphqlTag2.default)(_templateObject6);

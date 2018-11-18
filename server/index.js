@@ -32,8 +32,7 @@ app.use((req, res, next) => {
   let id;
   try {
     id = jwt.decode(token, secret).id;
-  }
-  catch (ex) {
+  } catch (ex) {
     return next({ status: 401 });
   }
   User.findById(id)

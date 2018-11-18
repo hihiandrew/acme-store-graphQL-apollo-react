@@ -1,6 +1,13 @@
 import React, { Component } from 'react';
 import { Query, Mutation } from 'react-apollo';
-import { PRODUCTS_QUERY, CART_ITEMS_COUNT, ORDERS_QUERY, POST_MUTATION, DEL_MUTATION, PUT_MUTATION, POST_ORDER_MUTATION } from '../queries'
+import {
+  PRODUCTS_QUERY,
+  ORDERS_QUERY,
+  POST_MUTATION,
+  DEL_MUTATION,
+  PUT_MUTATION,
+  POST_ORDER_MUTATION,
+} from '../queries';
 
 class Cart extends Component {
   _updateCacheAfterTrade = (store, trade, productId) => {
@@ -11,13 +18,11 @@ class Cart extends Component {
     let tradedProduct = data.products.find(prod => prod.id === productId);
     if (!trade) {
       tradedProduct.lineItems = [];
-    }
-    else {
+    } else {
       if (trade.quantity == 1) {
         //create lineItem
         tradedProduct.lineItems.push(trade);
-      }
-      else {
+      } else {
         //increment/decrement first (and only) lineItem
         tradedProduct.lineItems[0].quantity = trade.quantity;
       }
@@ -30,9 +35,8 @@ class Cart extends Component {
       query: POST_ORDER_MUTATION,
     });
 
-
     store.writeQuery({ query: POST_ORDER_MUTATION, data });
-  }
+  };
 
   render() {
     const { history } = this.props;
@@ -114,7 +118,7 @@ class Cart extends Component {
         <Mutation
           mutation={POST_ORDER_MUTATION}
           onCompleted={() => history.push('/orders')}
-          refetchQueries={[{query: ORDERS_QUERY}]}
+          refetchQueries={[{ query: ORDERS_QUERY }]}
         >
           {mutation => (
             <button

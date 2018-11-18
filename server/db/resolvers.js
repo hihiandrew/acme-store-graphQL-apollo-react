@@ -3,10 +3,10 @@ const secret = process.env.JWT_SECRET || 'test_secret';
 
 module.exports = {
   Order: {
-    user: async(order, args, { User }) => {
+    user: async (order, args, { User }) => {
       return User.findById(order.userId);
     },
-    lineItems: async(order, args, { Order, LineItem }) => {
+    lineItems: async (order, args, { Order, LineItem }) => {
       return LineItem.findAll({ where: { orderId: order.id } });
     },
   },
@@ -27,7 +27,7 @@ module.exports = {
     },
   },
   Product: {
-    lineItems: async(product, args, { Order, LineItem }) => {
+    lineItems: async (product, args, { Order, LineItem }) => {
       const cartFilter = args.filter;
       const items = await LineItem.findAll({
         where: { productId: product.id },
@@ -38,7 +38,7 @@ module.exports = {
     },
   },
   Query: {
-    orders: async(_, args, { Order, LineItem, User }) => {
+    orders: async (_, args, { Order, LineItem, User }) => {
       const cartFilter = args.filter;
       await Order.findOrCreate({ where: { status: 'CART' } });
       const orders = Order.findAll({
@@ -46,11 +46,11 @@ module.exports = {
       });
       return cartFilter ? orders.filter(o => o.status == cartFilter) : orders;
     },
-    ordersCount: async(_, args, { Order }) => {
+    ordersCount: async (_, args, { Order }) => {
       ords = await Order.findAll();
       return ords.length;
     },
-    cartItemsCount: async(_, args, { Order, LineItem }) => {
+    cartItemsCount: async (_, args, { Order, LineItem }) => {
       const cart = await Order.findOne({ where: { status: 'CART' } });
       const cartId = cart.id;
       const cartItems = await LineItem.findAll({ where: { orderId: cartId } });
@@ -59,61 +59,64 @@ module.exports = {
       }, 0);
       return count;
     },
-    order: async(_, { id }, { Order }) => await Order.findById(id),
+    order: async (_, { id }, { Order }) => await Order.findById(id),
 
-    products: async(_, args, { Product }) => await Product.findAll(),
+    products: async (_, args, { Product }) => await Product.findAll(),
 
-    product: async(_, { id }, { Product }) => await Product.findById(id),
+    product: async (_, { id }, { Product }) => await Product.findById(id),
 
-    lineItems: async(parent, args, { LineItem, Order }) => {
-      const cartFilter = args.filter;
+    lineItems: async (parent, args, { LineItem, Order }) => {
       const items = await LineItem.findAll();
-      const cartId = await Order.findOne({ where: { status: cartFilter } }).id;
-      return cartFilter ? items.filter(i => i.orderId == cartId) : items;
+      if (!args.filter) return items;
+      const cart = await Order.findOne({ where: { status: 'CART' } });
+      const cartId = cart.id;
+      return args.filter == 'CART'
+        ? items.filter(i => i.orderId == cartId)
+        : items.filter(i => i.orderId != cartId);
     },
 
-    users: async(_, args, { User }) => await User.findAll(),
+    users: async (_, args, { User }) => await User.findAll(),
   },
 
   Mutation: {
-    updateOrder: async(_, args, { Order }) => {
+    updateOrder: async (_, args, { Order }) => {
       const _order = await Order.findOne({ where: { status: 'CART' } });
       await _order.update({ status: 'ORDER' });
       return _order;
     },
 
-    deleteOrder: async(_, { id }, { Order }) =>
+    deleteOrder: async (_, { id }, { Order }) =>
       await Order.destroy({ where: { id } }),
 
-    reset: async(_, args, { Order, LineItem }) => {
+    reset: async (_, args, { Order, LineItem }) => {
       await Order.destroy({ where: {} });
       await LineItem.destroy({ where: {} });
       return;
     },
 
-    createLineItem: async(_, { productId }, { LineItem, Order }) => {
+    createLineItem: async (_, { productId }, { LineItem, Order }) => {
       const cart = await Order.findOne({ where: { status: 'CART' } });
       const cartId = cart.id;
       return LineItem.create({ orderId: cartId, quantity: 1, productId });
     },
 
-    updateLineItem: async(_, { id, quantity, inc }, { LineItem }) => {
+    updateLineItem: async (_, { id, quantity, inc }, { LineItem }) => {
       const _LineItem = await LineItem.findById(id);
       const quant = inc ? quantity + 1 : quantity - 1;
       await _LineItem.update({ quantity: quant });
       return _LineItem;
     },
 
-    deleteLineItem: async(_, { id }, { LineItem }) => {
+    deleteLineItem: async (_, { id }, { LineItem }) => {
       await LineItem.destroy({ where: { id } });
       return id;
     },
-    signup: async(_, { name, password }, { User }) => {
+    signup: async (_, { name, password }, { User }) => {
       const user = await User.create({ name, password });
       const token = jwt.encode({ id: user.id }, secret);
       return { token, user };
     },
-    login: async(_, { name, password }, { User }) => {
+    login: async (_, { name, password }, { User }) => {
       const user = await User.findOne({ where: { name } });
       if (!user) {
         throw new Error('No such user found');

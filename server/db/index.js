@@ -15,10 +15,10 @@ Order.belongsTo(User);
 
 const seed = () => {
   return Promise.all([
-      User.create({ name: 'moe', password: 'moe' }),
-      User.create({ name: 'larry', password: 'larry' }),
-      User.create({ name: 'admin', password: 'admin' }),
-    ])
+    User.create({ name: 'moe', password: 'moe' }),
+    User.create({ name: 'larry', password: 'larry' }),
+    User.create({ name: 'admin', password: 'admin' }),
+  ])
     .then(([moe, larry, admin]) => {
       return Promise.all([
         Product.create({ name: 'vhs tape' }),

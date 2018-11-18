@@ -27,7 +27,6 @@ class App extends Component {
     const renderCart = ({ history }) => {
       return <Cart history={history} />;
     };
-
     return (
       <HashRouter>
         <div className="container">
@@ -43,8 +42,7 @@ class App extends Component {
           ) : (
             <div>
               <Route path="/" render={renderLogin} />
-              Please login to access Acme Store. Try:{' '}
-              {`moe : moe, larry : larry`}.
+              {`Please login to access Acme Store. Try moe : moe, larry : larry.`}
             </div>
           )}
         </div>

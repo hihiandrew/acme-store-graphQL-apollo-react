@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { AUTH_TOKEN } from '../index';
 import { Mutation, ApolloConsumer } from 'react-apollo';
-import { LOGIN_MUTATION, SIGNUP_MUTATION } from '../queries'
+import { LOGIN_MUTATION, SIGNUP_MUTATION } from '../queries';
 
 class Login extends Component {
   constructor() {
@@ -13,9 +13,7 @@ class Login extends Component {
       login: true,
     };
   }
-  saveUserData = token => {
-    localStorage.setItem(AUTH_TOKEN, token);
-  };
+
   handleChange = e => {
     this.setState({
       [e.target.name]: e.target.value,
@@ -25,7 +23,7 @@ class Login extends Component {
     const { login } = this.state;
     const { history } = this.props;
     const { token } = login ? data.login : data.signup;
-    this.saveUserData(token);
+    localStorage.setItem(AUTH_TOKEN, token);
     history.push('/');
   };
   render() {
@@ -50,7 +48,6 @@ class Login extends Component {
               variables={{ name, password }}
               onCompleted={data => {
                 const { user } = login ? data.login : data.signup;
-                // console.log('client.write', user);
                 client.writeData({ data: { authUser: user } });
                 handleSave(data);
                 history.push('/cart');

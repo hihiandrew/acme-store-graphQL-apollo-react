@@ -1,37 +1,37 @@
 import React, { Component } from 'react';
 import { Query, Mutation } from 'react-apollo';
 import { AUTH_TOKEN } from '../index';
-import { LINEITEMS_QUERY, RESET_MUTATION, ORDERS_QUERY, PRODUCTS_QUERY } from '../queries'
+import {
+  ITEMS_FILTER_QUERY,
+  RESET_MUTATION,
+  ORDERS_QUERY,
+  PRODUCTS_QUERY,
+} from '../queries';
 
 class StoreHeader extends Component {
   render() {
     return (
       <div>
         <p className="alert alert-success">
-          <Query query={LINEITEMS_QUERY}>
+          <Query query={ITEMS_FILTER_QUERY} variables={{ filter: 'ORDER' }}>
             {({ loading, error, data }) => {
               if (loading) return 'Loading..';
               if (error) return 'Error';
-              const ordered = data.orders.filter(o => o.status == 'ORDER');
-              const soldItems = ordered.reduce(
-                (init, curr) =>
-                  init +
-                  curr.lineItems.reduce(
-                    (init, curr) => init + curr.quantity,
-                    0
-                  ),
-                0
-              );
-              return soldItems;
+              const { lineItems } = data;
+              return lineItems.reduce((sum, i) => sum + i.quantity, 0);
             }}
-          </Query>{' '}
-          items sold!
+          </Query>
+          {' items sold!'}
         </p>
         <Mutation
           mutation={RESET_MUTATION}
-          refetchQueries={[{query:LINEITEMS_QUERY},{query:PRODUCTS_QUERY},{query:ORDERS_QUERY}]}
+          refetchQueries={[
+            { query: ITEMS_FILTER_QUERY },
+            { query: PRODUCTS_QUERY },
+            { query: ORDERS_QUERY },
+          ]}
           // update={store => {
-          //   const data = store.readQuery({ query: LINEITEMS_QUERY });
+          //   const data = store.readQuery({ query: ITEMS_FILTER_QUERY });
           //   console.log(data)
           //   data.orders = [];
           //   store.writeQuery({
@@ -46,7 +46,7 @@ class StoreHeader extends Component {
             </button>
           )}
         </Mutation>
-        <br/>
+        <br />
       </div>
     );
   }
