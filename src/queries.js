@@ -1,17 +1,7 @@
 import gql from 'graphql-tag';
 
-//login
-// export const AUTH_USER_QUERY = gql`
-//   query {
-//     user @client {
-//       id
-//       name
-//     }
-//   }
-// `;
-
 //navbar
-export const ORDERS_COUNT_QUERY = gql`
+export const ORDERS_COUNT_QUERY = gql `
   query {
     orders(filter: "ORDER") {
       id
@@ -19,7 +9,7 @@ export const ORDERS_COUNT_QUERY = gql`
   }
 `;
 
-export const ITEMS_FILTER_QUERY = gql`
+export const ITEMS_FILTER_QUERY = gql `
   query ItemsFilteredCount($filter: String) {
     lineItems(filter: $filter) {
       id
@@ -29,7 +19,7 @@ export const ITEMS_FILTER_QUERY = gql`
 `;
 
 //store header
-export const LINEITEMS_QUERY = gql`
+export const LINEITEMS_QUERY = gql `
   query {
     orders {
       id
@@ -40,18 +30,18 @@ export const LINEITEMS_QUERY = gql`
     }
   }
 `;
-export const RESET_MUTATION = gql`
+export const RESET_MUTATION = gql `
   mutation {
     reset
   }
 `;
 
 //cart
-export const PRODUCTS_QUERY = gql`
+export const PRODUCTS_QUERY = gql `
   query {
     products {
-      name
       id
+      name
       lineItems(filter: "CART") {
         id
         quantity
@@ -61,8 +51,8 @@ export const PRODUCTS_QUERY = gql`
   }
 `;
 
-//cart?
-export const POST_MUTATION = gql`
+
+export const POST_MUTATION = gql `
   mutation PostMutation($productId: Int!) {
     createLineItem(productId: $productId) {
       id
@@ -71,12 +61,12 @@ export const POST_MUTATION = gql`
     }
   }
 `;
-export const DEL_MUTATION = gql`
+export const DEL_MUTATION = gql `
   mutation DeleteMutation($lineItemId: Int!) {
     deleteLineItem(id: $lineItemId)
   }
 `;
-export const PUT_MUTATION = gql`
+export const PUT_MUTATION = gql `
   mutation PutMutation($lineItemId: Int!, $quant: Int!, $inc: Boolean!) {
     updateLineItem(id: $lineItemId, quantity: $quant, inc: $inc) {
       id
@@ -87,7 +77,7 @@ export const PUT_MUTATION = gql`
   }
 `;
 
-export const POST_ORDER_MUTATION = gql`
+export const POST_ORDER_MUTATION = gql `
   mutation PostOrderMutation {
     updateOrder {
       status
@@ -96,30 +86,8 @@ export const POST_ORDER_MUTATION = gql`
   }
 `;
 
-//login
-export const LOGIN_MUTATION = gql`
-  mutation LoginMutation($name: String!, $password: String!) {
-    login(name: $name, password: $password) {
-      token
-      user {
-        name
-      }
-    }
-  }
-`;
-export const SIGNUP_MUTATION = gql`
-  mutation SignupMutation($name: String!, $password: String!) {
-    signup(name: $name, password: $password) {
-      token
-      user {
-        name
-      }
-    }
-  }
-`;
-
 //orders
-export const ORDERS_QUERY = gql`
+export const ORDERS_QUERY = gql `
   query {
     orders(filter: "ORDER") {
       id
@@ -127,6 +95,7 @@ export const ORDERS_QUERY = gql`
         id
         quantity
         product {
+          id
           name
         }
       }

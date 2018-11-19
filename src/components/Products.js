@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Query, Mutation } from 'react-apollo';
+import { Query, Mutation, graphql } from 'react-apollo';
 import {
   PRODUCTS_QUERY,
   ORDERS_QUERY,
@@ -7,9 +7,10 @@ import {
   DEL_MUTATION,
   PUT_MUTATION,
   POST_ORDER_MUTATION,
-} from '../queries';
+}
+from '../queries';
 
-class Cart extends Component {
+class Products extends Component {
   _updateCacheAfterTrade = (store, trade, productId) => {
     const data = store.readQuery({
       query: PRODUCTS_QUERY,
@@ -18,11 +19,13 @@ class Cart extends Component {
     let tradedProduct = data.products.find(prod => prod.id === productId);
     if (!trade) {
       tradedProduct.lineItems = [];
-    } else {
+    }
+    else {
       if (trade.quantity == 1) {
         //create lineItem
         tradedProduct.lineItems.push(trade);
-      } else {
+      }
+      else {
         //increment/decrement first (and only) lineItem
         tradedProduct.lineItems[0].quantity = trade.quantity;
       }
@@ -46,8 +49,8 @@ class Cart extends Component {
         <div className="row">
           <Query query={PRODUCTS_QUERY}>
             {({ loading, error, data }) => {
-              if (loading) return <div>Loading..</div>;
-              if (error) return <div>Error</div>;
+              if (loading) return 'Loading..'
+              if (error) return 'Error'
               return data.products.map(prod => {
                 const { id: productId, name, lineItems } = prod;
                 let lineItemId, quantity;
@@ -144,4 +147,4 @@ class Cart extends Component {
   }
 }
 
-export default Cart;
+export default Products;
