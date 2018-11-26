@@ -1,15 +1,5 @@
 import gql from 'graphql-tag';
 
-//login
-// export const AUTH_USER_QUERY = gql`
-//   query {
-//     user @client {
-//       id
-//       name
-//     }
-//   }
-// `;
-
 //navbar
 export const ORDERS_COUNT_QUERY = gql`
   query {
@@ -20,8 +10,8 @@ export const ORDERS_COUNT_QUERY = gql`
 `;
 
 export const ITEMS_FILTER_QUERY = gql`
-  query ItemsFilteredCount($filter: String) {
-    lineItems(filter: $filter) {
+  query ItemsFilteredCount($orderStatus: String) {
+    lineItems(filter: $orderStatus) {
       id
       quantity
     }
@@ -35,6 +25,7 @@ export const LINEITEMS_QUERY = gql`
       id
       status
       lineItems {
+        id
         quantity
       }
     }
@@ -48,11 +39,11 @@ export const RESET_MUTATION = gql`
 
 //cart
 export const PRODUCTS_QUERY = gql`
-  query {
+  query filterProducts($orderStatus: String) {
     products {
-      name
       id
-      lineItems(filter: "CART") {
+      name
+      lineItems(filter: $orderStatus) {
         id
         quantity
         orderId
@@ -96,32 +87,10 @@ export const POST_ORDER_MUTATION = gql`
   }
 `;
 
-//login
-export const LOGIN_MUTATION = gql`
-  mutation LoginMutation($name: String!, $password: String!) {
-    login(name: $name, password: $password) {
-      token
-      user {
-        name
-      }
-    }
-  }
-`;
-export const SIGNUP_MUTATION = gql`
-  mutation SignupMutation($name: String!, $password: String!) {
-    signup(name: $name, password: $password) {
-      token
-      user {
-        name
-      }
-    }
-  }
-`;
-
 //orders
 export const ORDERS_QUERY = gql`
-  query {
-    orders(filter: "ORDER") {
+  query filteredOrders($orderStatus: String) {
+    orders(filter: $orderStatus) {
       id
       lineItems {
         id

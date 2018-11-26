@@ -1,11 +1,5 @@
-const jwt = require('jwt-simple');
-const secret = process.env.JWT_SECRET || 'test_secret';
-
 module.exports = {
   Order: {
-    user: async (order, args, { User }) => {
-      return User.findById(order.userId);
-    },
     lineItems: async (order, args, { Order, LineItem }) => {
       return LineItem.findAll({ where: { orderId: order.id } });
     },
@@ -16,14 +10,6 @@ module.exports = {
     },
     order: (lineItem, args, { Order }) => {
       return Order.findById(lineItem.orderId);
-    },
-  },
-  User: {
-    orders: (user, args, { Order }) => {
-      return Order.findAll({ where: { userId: user.id } });
-    },
-    lineItems: (user, args, { LineItem }) => {
-      return LineItem.findAll({ where: { userId: user.id } });
     },
   },
   Product: {
@@ -38,12 +24,13 @@ module.exports = {
     },
   },
   Query: {
-    orders: async (_, args, { Order, LineItem, User }) => {
+    orders: async (_, args, { Order, LineItem }) => {
       const cartFilter = args.filter;
       await Order.findOrCreate({ where: { status: 'CART' } });
       const orders = Order.findAll({
-        include: [{ model: LineItem }, User],
+        include: [{ model: LineItem }],
       });
+      if (!args.filter) return orders;
       return cartFilter ? orders.filter(o => o.status == cartFilter) : orders;
     },
     ordersCount: async (_, args, { Order }) => {
@@ -74,8 +61,6 @@ module.exports = {
         ? items.filter(i => i.orderId == cartId)
         : items.filter(i => i.orderId != cartId);
     },
-
-    users: async (_, args, { User }) => await User.findAll(),
   },
 
   Mutation: {
@@ -110,23 +95,6 @@ module.exports = {
     deleteLineItem: async (_, { id }, { LineItem }) => {
       await LineItem.destroy({ where: { id } });
       return id;
-    },
-    signup: async (_, { name, password }, { User }) => {
-      const user = await User.create({ name, password });
-      const token = jwt.encode({ id: user.id }, secret);
-      return { token, user };
-    },
-    login: async (_, { name, password }, { User }) => {
-      const user = await User.findOne({ where: { name } });
-      if (!user) {
-        throw new Error('No such user found');
-      }
-      const valid = await User.findOne({ where: { password } });
-      if (!valid) {
-        throw new Error('Invalid password');
-      }
-      const token = jwt.encode({ id: user.id }, secret);
-      return { token, user };
     },
   },
 };

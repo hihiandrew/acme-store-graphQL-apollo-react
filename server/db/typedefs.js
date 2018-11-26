@@ -18,17 +18,6 @@ type Order {
   id: String!
   lineItems: [LineItem]
   status: String!
-  userId: Int
-  user: User
-
-}
-
-type User {
-  id: String
-  name: String
-  password: String
-  orders: [Order]
-  lineItems: [LineItem]
 }
 
 type Query {
@@ -38,15 +27,8 @@ type Query {
   product(id:Int!): Product
   lineItems(filter: String): [LineItem]
   lineItem(id:Int!): LineItem
-  users: [User]
-  user(id:String!):User
   ordersCount: Int
   cartItemsCount: Int
-}
-
-type AuthPayload {
-  token: String
-  user: User
 }
 
 type Mutation {
@@ -58,8 +40,5 @@ type Mutation {
   createLineItem(id: Int, quantity: Int, productId: Int, orderId: String): LineItem!
   updateLineItem(id: Int, quantity: Int, inc: Boolean, productId: Int, orderId: String): LineItem!
   deleteLineItem(id: Int): Int
-
-  signup(name:String!, password: String!): AuthPayload
-  login(name: String!, password:String!): AuthPayload
 }
 `;

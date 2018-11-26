@@ -13,15 +13,17 @@ class Cart extends Component {
   _updateCacheAfterTrade = (store, trade, productId) => {
     const data = store.readQuery({
       query: PRODUCTS_QUERY,
+      variables: { orderStatus: 'CART' },
     });
     //conditional del as mutation doesnt return quantity, instead we remove it
     let tradedProduct = data.products.find(prod => prod.id === productId);
+    console.log(trade);
     if (!trade) {
       tradedProduct.lineItems = [];
     } else {
       if (trade.quantity == 1) {
         //create lineItem
-        tradedProduct.lineItems.push(trade);
+        tradedProduct.lineItems = [...tradedProduct.lineItems, trade];
       } else {
         //increment/decrement first (and only) lineItem
         tradedProduct.lineItems[0].quantity = trade.quantity;
@@ -30,12 +32,12 @@ class Cart extends Component {
     store.writeQuery({ query: PRODUCTS_QUERY, data });
   };
 
-  _updateCacheAfterOrder = (store, order, productId) => {
+  _updateCacheAfterOrder = (store, orderId) => {
     const data = store.readQuery({
-      query: POST_ORDER_MUTATION,
+      query: ORDERS_QUERY,
     });
-
-    store.writeQuery({ query: POST_ORDER_MUTATION, data });
+    console.log('updatecacheOrder', data);
+    store.writeQuery({ query: ORDERS_QUERY, data });
   };
 
   render() {
@@ -44,11 +46,13 @@ class Cart extends Component {
       <div className="container">
         <h3>Products</h3>
         <div className="row">
-          <Query query={PRODUCTS_QUERY}>
+          <Query query={PRODUCTS_QUERY} variables={{ orderStatus: 'CART' }}>
             {({ loading, error, data }) => {
               if (loading) return <div>Loading..</div>;
               if (error) return <div>Error</div>;
-              return data.products.map(prod => {
+              const { products } = data;
+              console.log('cart prods', products);
+              return products.map(prod => {
                 const { id: productId, name, lineItems } = prod;
                 let lineItemId, quantity;
                 if (lineItems.length) {
@@ -69,6 +73,7 @@ class Cart extends Component {
                         lineItemId,
                       }}
                       update={(store, { data }) => {
+                        console.log('store', store);
                         this._updateCacheAfterTrade(
                           store,
                           quant ? data.updateLineItem : data.createLineItem,
@@ -117,24 +122,16 @@ class Cart extends Component {
         <br />
         <Mutation
           mutation={POST_ORDER_MUTATION}
-          onCompleted={() => history.push('/orders')}
           refetchQueries={[{ query: ORDERS_QUERY }]}
+          onCompleted={() => history.push('/orders')}
+          update={(store, { data }) => {
+            console.log('store', store);
+            console.log('data', data);
+            //this._updateCacheAfterOrder(store, data.updateOrder.id)
+          }}
         >
           {mutation => (
-            <button
-              className="btn btn-primary"
-              // disabled={
-              //   <Query query={CART_ITEMS_COUNT}>
-              //     {({ loading, error, data }) => {
-              //       console.log(loading, error, data);
-              //       if (loading || error) return 1;
-              //       console.log(data.cartItemsCount);
-              //       return data.cartItemsCount;
-              //     }}
-              //   </Query>
-              // }
-              onClick={mutation}
-            >
+            <button className="btn btn-primary" onClick={mutation}>
               Create Order
             </button>
           )}
@@ -143,5 +140,5 @@ class Cart extends Component {
     );
   }
 }
-
+//ok
 export default Cart;

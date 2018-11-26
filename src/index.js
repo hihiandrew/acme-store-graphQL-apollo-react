@@ -4,7 +4,6 @@ import App from './components/App';
 import { createHttpLink } from 'apollo-link-http';
 import { ApolloProvider } from 'react-apollo';
 import { ApolloClient } from 'apollo-client';
-import { setContext } from 'apollo-link-context';
 import { InMemoryCache } from 'apollo-cache-inmemory';
 const PORT = process.env.PORT || 8080;
 export const AUTH_TOKEN = 'token-1806';
@@ -14,18 +13,8 @@ const httpLink = createHttpLink({
   // uri: `https://vfs.cloud9.us-east-1.amazonaws.com/graphql`,
 });
 
-const authLink = setContext((_, { headers }) => {
-  const token = localStorage.getItem(AUTH_TOKEN);
-  return {
-    headers: {
-      ...headers,
-      authorization: token ? token : '',
-    },
-  };
-});
-
 const client = new ApolloClient({
-  link: authLink.concat(httpLink),
+  link: httpLink,
   cache: new InMemoryCache(),
   clientState: {},
 });

@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { Query, Mutation } from 'react-apollo';
-import { AUTH_TOKEN } from '../index';
 import {
   ITEMS_FILTER_QUERY,
   RESET_MUTATION,
@@ -13,7 +12,10 @@ class StoreHeader extends Component {
     return (
       <div>
         <p className="alert alert-success">
-          <Query query={ITEMS_FILTER_QUERY} variables={{ filter: 'ORDER' }}>
+          <Query
+            query={ITEMS_FILTER_QUERY}
+            variables={{ orderStatus: 'ORDER' }}
+          >
             {({ loading, error, data }) => {
               if (loading) return 'Loading..';
               if (error) return 'Error';
